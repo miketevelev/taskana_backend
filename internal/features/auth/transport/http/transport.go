@@ -37,6 +37,11 @@ type AuthService interface {
 		refreshToken string,
 		userAgent *string,
 	) (domain.TokenPair, error)
+
+	Logout(
+		ctx context.Context,
+		refreshToken string,
+	) error
 }
 
 func NewAuthHTTPHandler(authService AuthService) *AuthHTTPHandler {
@@ -65,9 +70,16 @@ func (h *AuthHTTPHandler) Routes() []core_http_server.Route {
 			Middleware: []core_http_middleware.Middleware{rateLimit},
 		},
 		{
-			Method:  http.MethodPost,
-			Path:    "/auth/refresh",
-			Handler: h.Refresh,
+			Method:     http.MethodPost,
+			Path:       "/auth/refresh",
+			Handler:    h.Refresh,
+			Middleware: []core_http_middleware.Middleware{rateLimit},
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/auth/logout",
+			Handler:    h.Logout,
+			Middleware: []core_http_middleware.Middleware{rateLimit},
 		},
 	}
 }

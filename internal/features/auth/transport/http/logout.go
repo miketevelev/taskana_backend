@@ -25,4 +25,14 @@ func (h *AuthHTTPHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+
+	if err := h.authService.Logout(ctx, request.RefreshToken); err != nil {
+		responseHandler.ErrorResponse(
+			err,
+			"failed to logout",
+		)
+		return
+	}
+
+	responseHandler.NoContentResponse()
 }
