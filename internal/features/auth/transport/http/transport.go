@@ -12,6 +12,7 @@ import (
 
 type AuthHTTPHandler struct {
 	authService AuthService
+	cleanup     func()
 }
 
 type AuthService interface {
@@ -38,16 +39,17 @@ type AuthService interface {
 	) (domain.TokenPair, error)
 }
 
-func NewAuthHTTPHandler(
-	authService AuthService,
-) *AuthHTTPHandler {
+func NewAuthHTTPHandler(authService AuthService) *AuthHTTPHandler {
 	return &AuthHTTPHandler{
 		authService: authService,
 	}
 }
 
 func (h *AuthHTTPHandler) Routes() []core_http_server.Route {
-	rateLimit := core_http_middleware.AuthRateLimit(5, time.Minute)
+	rateLimit, stop := core_http_middleware.AuthRateLimit(
+		5, time.Minute, 5*time.Minute,
+	)
+	h.cleanup = stop
 
 	return []core_http_server.Route{
 		{
@@ -67,5 +69,11 @@ func (h *AuthHTTPHandler) Routes() []core_http_server.Route {
 			Path:    "/auth/refresh",
 			Handler: h.Refresh,
 		},
+	}
+}
+
+func (h *AuthHTTPHandler) Shutdown() {
+	if h.cleanup != nil {
+		h.cleanup()
 	}
 }

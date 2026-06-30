@@ -26,12 +26,14 @@ func main() {
 	cfg := core_config.NewConfigMust()
 	time.Local = cfg.TimeZone
 
+	// Graceful Shutdown
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
 		syscall.SIGINT, syscall.SIGTERM,
 	)
 	defer cancel()
 
+	// Logger init
 	logger, err := core_logger.NewLogger(core_logger.NewConfigMust())
 	if err != nil {
 		fmt.Println("Error initializing logger:", err)
@@ -39,18 +41,24 @@ func main() {
 	}
 	defer logger.Close()
 
+	// JWT init
 	jwtConfig := core_auth.NewJWTConfigMust()
 	tokenManager := core_auth.NewTokenManager(jwtConfig)
 
+	// Database init
 	pool, err := core_pgx_pool.NewPool(ctx, core_pgx_pool.NewConfigMust())
 	if err != nil {
 		logger.Fatal("failed to init postgres connection pool", zap.Error(err))
 	}
 	defer pool.Close()
 
+	// Init layers (Repository -> Service -> Handler)
 	authRepository := auth_postgres_repository.NewAuthRepository(pool)
 	authService := auth_service.NewAuthService(authRepository, tokenManager)
 	authTransportHTTP := auth_transport_http.NewAuthHTTPHandler(authService)
+
+	// Rate Limiter Janitor
+	defer authTransportHTTP.Shutdown()
 
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
@@ -62,6 +70,7 @@ func main() {
 		core_http_middleware.Panic(),
 	)
 
+	// Api version v1 router
 	apiVersionRouter := core_http_server.NewAPIVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(authTransportHTTP.Routes()...)
 

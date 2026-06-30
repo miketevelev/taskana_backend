@@ -9,9 +9,7 @@ import (
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 )
 
-type RefreshRequest struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
-}
+type RefreshRequest RefreshAndLogoutRequest
 
 type RefreshResponse struct {
 	Tokens domain.TokenPair `json:"tokens"`
@@ -30,6 +28,7 @@ func (h *AuthHTTPHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 			err,
 			"failed to decode refresh request",
 		)
+		return
 	}
 
 	userAgent := r.Header.Get("User-Agent")

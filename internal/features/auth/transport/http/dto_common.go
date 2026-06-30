@@ -7,6 +7,10 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
+type RefreshAndLogoutRequest struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
 type UserResponse struct {
 	ID        uuid.UUID `json:"id" example:"10"`
 	Version   int       `json:"version" example:"1"`
