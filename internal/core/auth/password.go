@@ -2,8 +2,10 @@ package core_auth
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -89,10 +91,31 @@ func VerifyPassword(password, encodedHash string) (bool, error) {
 	return false, nil
 }
 
+//func HashToken(token string) (string, error) {
+//	return HashPassword(token)
+//}
+
 func HashToken(token string) (string, error) {
-	return HashPassword(token)
+	if token == "" {
+		return "", fmt.Errorf(
+			"token cannot be empty: %w", core_errors.ErrInvalidArgument,
+		)
+	}
+
+	hash := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(hash[:]), nil
 }
 
+//func VerifyTokenHash(token, encodedHash string) (bool, error) {
+//	return VerifyPassword(token, encodedHash)
+//}
+
 func VerifyTokenHash(token, encodedHash string) (bool, error) {
-	return VerifyPassword(token, encodedHash)
+	currentHash, err := HashToken(token)
+	if err != nil {
+		return false, err
+	}
+	return subtle.ConstantTimeCompare(
+		[]byte(currentHash), []byte(encodedHash),
+	) == 1, nil
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
 type UserResponse struct {
@@ -15,4 +16,9 @@ type UserResponse struct {
 	Timezone  string    `json:"timezone" example:"Europe/London"`
 	CreatedAt time.Time `json:"created_at" example:"2020-01-01T00:00:00+00:00"`
 	UpdatedAt time.Time `json:"updated_at" example:"2020-01-01T00:00:00+00:00"`
+}
+
+type RegisterAndLoginResponse struct {
+	Tokens domain.TokenPair `json:"tokens"`
+	User   UserResponse     `json:"user"`
 }

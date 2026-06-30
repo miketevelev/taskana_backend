@@ -23,6 +23,19 @@ type AuthService interface {
 		password string,
 		timezone string,
 	) (domain.TokenPair, domain.User, error)
+
+	Login(
+		ctx context.Context,
+		email string,
+		password string,
+		userAgent *string,
+	) (domain.TokenPair, domain.User, error)
+
+	Refresh(
+		ctx context.Context,
+		refreshToken string,
+		userAgent *string,
+	) (domain.TokenPair, error)
 }
 
 func NewAuthHTTPHandler(
@@ -42,6 +55,17 @@ func (h *AuthHTTPHandler) Routes() []core_http_server.Route {
 			Path:       "/auth/register",
 			Handler:    h.Register,
 			Middleware: []core_http_middleware.Middleware{rateLimit},
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/auth/login",
+			Handler:    h.Login,
+			Middleware: []core_http_middleware.Middleware{rateLimit},
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/auth/refresh",
+			Handler: h.Refresh,
 		},
 	}
 }

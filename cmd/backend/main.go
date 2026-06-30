@@ -8,13 +8,18 @@ import (
 	"syscall"
 	"time"
 
+	core_auth "github.com/miketevelev/taskana_backend/internal/core/auth"
 	core_config "github.com/miketevelev/taskana_backend/internal/core/config"
 	core_logger "github.com/miketevelev/taskana_backend/internal/core/logger"
 	core_pgx_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/miketevelev/taskana_backend/internal/core/transport/http/middleware"
 	core_http_server "github.com/miketevelev/taskana_backend/internal/core/transport/http/server"
+	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
+	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
 	"go.uber.org/zap"
+
+	_ "time/tzdata"
 )
 
 func main() {
@@ -34,8 +39,8 @@ func main() {
 	}
 	defer logger.Close()
 
-	//jwtConfig := core_auth.NewJWTConfigMust()
-	//tokenManager := core_auth.NewTokenManager(jwtConfig)
+	jwtConfig := core_auth.NewJWTConfigMust()
+	tokenManager := core_auth.NewTokenManager(jwtConfig)
 
 	pool, err := core_pgx_pool.NewPool(ctx, core_pgx_pool.NewConfigMust())
 	if err != nil {
@@ -43,7 +48,9 @@ func main() {
 	}
 	defer pool.Close()
 
-	authTransportHTTP := auth_transport_http.NewAuthHTTPHandler(nil)
+	authRepository := auth_postgres_repository.NewAuthRepository(pool)
+	authService := auth_service.NewAuthService(authRepository, tokenManager)
+	authTransportHTTP := auth_transport_http.NewAuthHTTPHandler(authService)
 
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
