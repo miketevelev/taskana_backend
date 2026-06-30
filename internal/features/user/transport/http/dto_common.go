@@ -1,4 +1,4 @@
-package auth_transport_http
+package user_transport_http
 
 import (
 	"time"
@@ -6,10 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
-
-type RefreshAndLogoutRequest struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
-}
 
 type UserDTOResponse struct {
 	ID        uuid.UUID `json:"id" example:"10"`
@@ -22,7 +18,15 @@ type UserDTOResponse struct {
 	UpdatedAt time.Time `json:"updated_at" example:"2020-01-01T00:00:00+00:00"`
 }
 
-type RegisterAndLoginResponse struct {
-	Tokens domain.TokenPair `json:"tokens"`
-	User   UserDTOResponse  `json:"user"`
+func userDTOFromDomain(user domain.User) UserDTOResponse {
+	return UserDTOResponse{
+		ID:        user.ID,
+		Version:   user.Version,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Timezone:  user.Timezone,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
 }

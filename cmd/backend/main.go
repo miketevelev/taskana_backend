@@ -17,6 +17,9 @@ import (
 	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
 	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
+	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/user/repository/postgres"
+	user_service "github.com/miketevelev/taskana_backend/internal/features/user/service"
+	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/user/transport/http"
 	"go.uber.org/zap"
 
 	_ "time/tzdata"
@@ -52,10 +55,17 @@ func main() {
 	}
 	defer pool.Close()
 
-	// Init layers (Repository -> Service -> Handler)
+	// Init Auth layers (Repository -> Service -> Handler)
 	authRepository := auth_postgres_repository.NewAuthRepository(pool)
 	authService := auth_service.NewAuthService(authRepository, tokenManager)
 	authTransportHTTP := auth_transport_http.NewAuthHTTPHandler(authService)
+
+	// Init User layers (Repository -> Service -> Handler)
+	userRepository := user_postgres_repository.NewUserRepository(pool)
+	userService := user_service.NewUsersService(userRepository)
+	userTransportHTTP := user_transport_http.NewUsersHTTPHandler(
+		userService, tokenManager,
+	)
 
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
@@ -73,6 +83,7 @@ func main() {
 	// Api version v1 router
 	apiVersionRouter := core_http_server.NewAPIVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(authTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 

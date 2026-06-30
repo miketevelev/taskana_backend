@@ -3,8 +3,10 @@ package auth_postgres_repository
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
 func (r *AuthRepository) CreateUser(
@@ -45,6 +47,13 @@ timezone, created_at, updated_at
 		&userModel.UpdatedAt,
 	)
 	if err != nil {
+		if strings.Contains(err.Error(), "23505") {
+			return domain.User{}, fmt.Errorf(
+				"user with this email already exists: %w",
+				core_errors.ErrAlreadyExists,
+			)
+		}
+
 		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}
 

@@ -2,7 +2,7 @@ package domain
 
 import (
 	"fmt"
-	"net/mail"
+	"regexp"
 	"strings"
 	"time"
 
@@ -48,14 +48,18 @@ func NewUser(
 }
 
 func (u User) Validate() error {
-	if _, err := mail.ParseAddress(u.Email); err != nil {
+	var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+
+	emailLength := len(u.Email)
+	if emailLength < 5 || emailLength > 254 {
 		return fmt.Errorf(
-			"invalid email format: %w", core_errors.ErrInvalidArgument,
+			"email must be between 5 and 254 characters long, got %d: %w",
+			emailLength, core_errors.ErrInvalidArgument,
 		)
 	}
-	if len(u.Email) > 255 {
+	if !emailRegex.MatchString(u.Email) {
 		return fmt.Errorf(
-			"email is too long: %w", core_errors.ErrInvalidArgument,
+			"invalid email format: %w", core_errors.ErrInvalidArgument,
 		)
 	}
 
@@ -120,4 +124,89 @@ func NewUserUninitialized(
 		time.Now().UTC(),
 		time.Now().UTC(),
 	)
+}
+
+func (u *User) ApplyPatch(patch UserPatch) error {
+	if err := patch.Validate(); err != nil {
+		return fmt.Errorf("validate user patch: %w", err)
+	}
+
+	tmp := *u
+
+	if patch.FirstName.Set {
+		tmp.FirstName = *patch.FirstName.Value
+	}
+
+	if patch.LastName.Set {
+		tmp.LastName = *patch.LastName.Value
+	}
+
+	if patch.Email.Set {
+		tmp.Email = *patch.Email.Value
+	}
+
+	if patch.Timezone.Set {
+		tmp.Timezone = *patch.Timezone.Value
+	}
+
+	if err := tmp.Validate(); err != nil {
+		return fmt.Errorf("validate user patch: %w", err)
+	}
+
+	*u = tmp
+
+	return nil
+}
+
+type UserPatch struct {
+	FirstName Nullable[string]
+	LastName  Nullable[string]
+	Email     Nullable[string]
+	Timezone  Nullable[string]
+}
+
+func NewUserPatch(
+	firstName Nullable[string],
+	lastName Nullable[string],
+	email Nullable[string],
+	timezone Nullable[string],
+) UserPatch {
+	return UserPatch{
+		FirstName: firstName,
+		LastName:  lastName,
+		Email:     email,
+		Timezone:  timezone,
+	}
+}
+
+func (p *UserPatch) Validate() error {
+	if p.FirstName.Set && p.FirstName.Value == nil {
+		return fmt.Errorf(
+			"first name cannot be nil: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	if p.LastName.Set && p.LastName.Value == nil {
+		return fmt.Errorf(
+			"last name cannot be nil: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	if p.Email.Set && p.Email.Value == nil {
+		return fmt.Errorf(
+			"email cannot be nil: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	if p.Timezone.Set && p.Timezone.Value == nil {
+		return fmt.Errorf(
+			"timezone cannot be nil: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	return nil
 }

@@ -54,7 +54,7 @@ func (h *AuthHTTPHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	response := RegisterAndLoginResponse{
 		Tokens: tokens,
-		User: UserResponse{
+		User: UserDTOResponse{
 			ID:        user.ID,
 			Version:   user.Version,
 			FirstName: user.FirstName,
