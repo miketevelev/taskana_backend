@@ -18,7 +18,7 @@ func (s *AuthService) Login(
 	user, err := s.authRepository.GetUserByEmail(ctx, email)
 	if err != nil {
 		return domain.TokenPair{}, domain.User{}, fmt.Errorf(
-			"get users by email: %v: %w", core_errors.ErrUnauthorized, err,
+			"get user by email: %v: %w", core_errors.ErrUnauthorized, err,
 		)
 	}
 

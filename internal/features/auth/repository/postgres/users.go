@@ -17,7 +17,7 @@ func (r *AuthRepository) CreateUser(
 	defer cancel()
 
 	query := `
-		INSERT INTO taskana.users (first_name, last_name, email, 
+		INSERT INTO taskana.user (first_name, last_name, email, 
 password_hash, timezone)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, version, first_name, last_name, email, password_hash, 
@@ -49,12 +49,12 @@ timezone, created_at, updated_at
 	if err != nil {
 		if strings.Contains(err.Error(), "23505") {
 			return domain.User{}, fmt.Errorf(
-				"users with this email already exists: %w",
+				"user with this email already exists: %w",
 				core_errors.ErrAlreadyExists,
 			)
 		}
 
-		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)
@@ -72,7 +72,7 @@ func (r *AuthRepository) GetUserByEmail(
 	query := `
 		SELECT id, version, first_name, last_name, email, password_hash, 
 timezone, created_at, updated_at
-		FROM taskana.users
+		FROM taskana.user
 		WHERE email = $1
 	`
 
@@ -95,7 +95,7 @@ timezone, created_at, updated_at
 		&userModel.UpdatedAt,
 	)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)

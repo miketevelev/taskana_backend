@@ -26,7 +26,7 @@ func (s *AuthService) Register(
 	if err := user.Validate(); err != nil {
 		return domain.TokenPair{},
 			domain.User{},
-			fmt.Errorf("users validation failed: %w", err)
+			fmt.Errorf("user validation failed: %w", err)
 	}
 
 	hash, err := core_auth.HashPassword(password)
@@ -40,7 +40,7 @@ func (s *AuthService) Register(
 	user, err = s.authRepository.CreateUser(ctx, user)
 	if err != nil {
 		return domain.TokenPair{}, domain.User{}, fmt.Errorf(
-			"users creation failed: %w", err,
+			"user creation failed: %w", err,
 		)
 	}
 

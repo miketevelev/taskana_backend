@@ -14,7 +14,7 @@ func (s *UsersService) GetUser(
 ) (domain.User, error) {
 	user, err := s.userRepository.GetUser(ctx, userID)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("get users from repository: %w", err)
+		return domain.User{}, fmt.Errorf("get user from repository: %w", err)
 	}
 
 	return user, nil

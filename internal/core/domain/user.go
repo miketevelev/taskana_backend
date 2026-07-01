@@ -128,7 +128,7 @@ func NewUserUninitialized(
 
 func (u *User) ApplyPatch(patch UserPatch) error {
 	if err := patch.Validate(); err != nil {
-		return fmt.Errorf("validate users patch: %w", err)
+		return fmt.Errorf("validate user patch: %w", err)
 	}
 
 	tmp := *u
@@ -150,7 +150,7 @@ func (u *User) ApplyPatch(patch UserPatch) error {
 	}
 
 	if err := tmp.Validate(); err != nil {
-		return fmt.Errorf("validate users patch: %w", err)
+		return fmt.Errorf("validate user patch: %w", err)
 	}
 
 	*u = tmp

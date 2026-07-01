@@ -116,10 +116,10 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	userDomain, err := h.userService.PatchUser(ctx, userID, userPatch)
 	if err != nil {
 		if errors.Is(err, core_errors.ErrAlreadyExists) {
-			log.Error("failed to patch users (duplicate email)", zap.Error(err))
+			log.Error("failed to patch user (duplicate email)", zap.Error(err))
 			responseHandler.JSONResponse(
 				map[string]string{
-					"error":   "failed to patch users",
+					"error":   "failed to patch user",
 					"message": "email is already exists",
 				},
 				http.StatusConflict,
@@ -128,7 +128,7 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		}
 		responseHandler.ErrorResponse(
 			err,
-			"failed to patch users",
+			"failed to patch user",
 		)
 
 		return

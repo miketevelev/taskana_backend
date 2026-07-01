@@ -48,11 +48,11 @@ func (h *AuthHTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		if errors.Is(err, core_errors.ErrAlreadyExists) {
-			log.Error("failed to register users (duplicate)", zap.Error(err))
+			log.Error("failed to register user (duplicate)", zap.Error(err))
 
 			responseHandler.JSONResponse(
 				map[string]string{
-					"error":   "failed to register users",
+					"error":   "failed to register user",
 					"message": "email is already exists",
 				},
 				http.StatusConflict,
@@ -61,7 +61,7 @@ func (h *AuthHTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 		}
 		responseHandler.ErrorResponse(
 			err,
-			"failed to register users",
+			"failed to register user",
 		)
 		return
 	}

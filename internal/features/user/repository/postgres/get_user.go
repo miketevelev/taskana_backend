@@ -18,7 +18,7 @@ func (r *UserRepository) GetUser(
 	query := `
 		SELECT id, version, first_name, last_name, email, password_hash, 
 timezone, created_at, updated_at
-		FROM taskana.users
+		FROM taskana.user
 		WHERE id = $1;
 		`
 
@@ -37,7 +37,7 @@ timezone, created_at, updated_at
 		&userModel.UpdatedAt,
 	)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)

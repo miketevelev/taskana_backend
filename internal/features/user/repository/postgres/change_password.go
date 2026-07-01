@@ -43,7 +43,7 @@ func (r *UserRepository) ChangePassword(
 	defer cancel()
 
 	query := `
-		UPDATE taskana.users
+		UPDATE taskana.user
 		SET
 			password_hash = $1,
 			updated_at = NOW(),
@@ -76,7 +76,7 @@ timezone, created_at, updated_at
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
-				"users with id='%s' concurrently accessed or not found: %w",
+				"user with id='%s' concurrently accessed or not found: %w",
 				user.ID,
 				core_errors.ErrConflict,
 			)
@@ -99,7 +99,7 @@ func (r *UserRepository) GetUserByID(
 	query := `
 		SELECT id, version, first_name, last_name, email, password_hash, 
 timezone, created_at, updated_at
-		FROM taskana.users
+		FROM taskana.user
 		WHERE id = $1
 	`
 
@@ -122,7 +122,7 @@ timezone, created_at, updated_at
 		&userModel.UpdatedAt,
 	)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)

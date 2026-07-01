@@ -59,19 +59,19 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
 			Method:     http.MethodGet,
-			Path:       "/users",
+			Path:       "/user",
 			Handler:    h.GetUser,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodPost,
-			Path:       "/users/change-password",
+			Path:       "/user/change-password",
 			Handler:    h.ChangePassword,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodPatch,
-			Path:       "/users",
+			Path:       "/user",
 			Handler:    h.PatchUser,
 			Middleware: auth,
 		},

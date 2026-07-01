@@ -24,5 +24,5 @@ type UserDTOResponse struct {
 
 type RegisterAndLoginResponse struct {
 	Tokens domain.TokenPair `json:"tokens"`
-	User   UserDTOResponse  `json:"users"`
+	User   UserDTOResponse  `json:"user"`
 }

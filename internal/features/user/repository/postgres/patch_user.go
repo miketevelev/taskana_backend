@@ -21,7 +21,7 @@ func (r *UserRepository) CheckEmail(
 	query := `
 		SELECT EXISTS(
 			SELECT 1 
-			FROM taskana.users 
+			FROM taskana.user 
 			WHERE email = $1
 		);
 	`
@@ -50,7 +50,7 @@ func (r *UserRepository) PatchUser(
 	defer cancel()
 
 	query := `
-	UPDATE taskana.users
+	UPDATE taskana.user
 	SET
 		first_name = $1,
 		last_name = $2,
@@ -90,12 +90,12 @@ timezone, created_at, updated_at
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{},
 				fmt.Errorf(
-					"users with id='%s' concurrently accessed or not found: %w",
+					"user with id='%s' concurrently accessed or not found: %w",
 					userID,
 					core_errors.ErrConflict,
 				)
 		}
-		return domain.User{}, fmt.Errorf("patch users repository: %w", err)
+		return domain.User{}, fmt.Errorf("patch user repository: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)
