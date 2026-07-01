@@ -33,3 +33,22 @@ func userDomainFromModel(userModel UserModel) domain.User {
 		userModel.UpdatedAt,
 	)
 }
+
+func scanUser(row interface{ Scan(dest ...any) error }) (UserModel, error) {
+	var userModel UserModel
+	err := row.Scan(
+		&userModel.ID,
+		&userModel.Version,
+		&userModel.FirstName,
+		&userModel.LastName,
+		&userModel.Email,
+		&userModel.PasswordHash,
+		&userModel.Timezone,
+		&userModel.CreatedAt,
+		&userModel.UpdatedAt,
+	)
+	if err != nil {
+		return UserModel{}, err
+	}
+	return userModel, nil
+}

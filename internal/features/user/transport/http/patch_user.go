@@ -125,6 +125,19 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 				http.StatusConflict,
 			)
 			return
+		} else if errors.Is(err, core_errors.ErrInvalidArgument) {
+			log.Error(
+				"failed to patch user (email address is the same as old email)",
+				zap.Error(err),
+			)
+			responseHandler.JSONResponse(
+				map[string]string{
+					"error":   "failed to patch user",
+					"message": "email address is the same as old email",
+				},
+				http.StatusBadRequest,
+			)
+			return
 		}
 		responseHandler.ErrorResponse(
 			err,

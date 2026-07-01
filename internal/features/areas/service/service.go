@@ -12,6 +12,12 @@ type AreaService struct {
 }
 
 type AreaRepository interface {
+	GetArea(
+		ctx context.Context,
+		userID uuid.UUID,
+		areaID uuid.UUID,
+	) (domain.Area, error)
+
 	CreateArea(
 		ctx context.Context,
 		userID uuid.UUID,

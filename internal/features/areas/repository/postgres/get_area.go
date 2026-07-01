@@ -8,37 +8,21 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (r *AreasRepository) CreateArea(
+func (r *AreasRepository) GetArea(
 	ctx context.Context,
 	userID uuid.UUID,
-	area domain.Area,
+	areaID uuid.UUID,
 ) (domain.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
-		INSERT INTO taskana.areas (id, user_id, title, position, created_at, updated_at)
-		VALUES (
-			$1, $2, $3, 
-			(
-				SELECT COALESCE(MAX(position), 0) + 1 
-				FROM taskana.areas 
-				WHERE user_id = $2 
-			),
-			$4, $5
-		)
-		RETURNING id, version, user_id, title, position, created_at, updated_at
+		SELECT id, version, user_id, title, position, created_at, updated_at
+		FROM taskana.areas
+		WHERE id = $1 AND user_id = $2
 	`
 
-	row := r.pool.QueryRow(
-		ctx,
-		query,
-		area.ID,
-		area.UserID,
-		area.Title,
-		area.CreatedAt,
-		area.UpdatedAt,
-	)
+	row := r.pool.QueryRow(ctx, query, areaID, userID)
 
 	areaModel, err := scanArea(row)
 	if err != nil {

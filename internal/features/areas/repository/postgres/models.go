@@ -1,6 +1,7 @@
 package areas_postgres_repository
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,4 +40,21 @@ func areaDomainFromModel(areaModel AreaModel) domain.Area {
 		areaModel.CreatedAt,
 		areaModel.UpdatedAt,
 	)
+}
+
+func scanArea(row interface{ Scan(dest ...any) error }) (AreaModel, error) {
+	var areaModel AreaModel
+	err := row.Scan(
+		&areaModel.ID,
+		&areaModel.Version,
+		&areaModel.UserID,
+		&areaModel.Title,
+		&areaModel.Position,
+		&areaModel.CreatedAt,
+		&areaModel.UpdatedAt,
+	)
+	if err != nil {
+		return AreaModel{}, fmt.Errorf("scan area: %w", err)
+	}
+	return areaModel, nil
 }
