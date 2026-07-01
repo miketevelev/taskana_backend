@@ -35,6 +35,12 @@ type AreasService interface {
 		userID uuid.UUID,
 		area domain.Area,
 	) (domain.Area, error)
+
+	DeleteArea(
+		ctx context.Context,
+		userID uuid.UUID,
+		areaID uuid.UUID,
+	) error
 }
 
 func NewAreasHTTPHandler(
@@ -69,6 +75,12 @@ func (h *AreasHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/areas",
 			Handler:    h.CreateArea,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/areas/{id}",
+			Handler:    h.DeleteArea,
 			Middleware: auth,
 		},
 	}

@@ -30,6 +30,12 @@ type AreaRepository interface {
 		userID uuid.UUID,
 		area domain.Area,
 	) (domain.Area, error)
+
+	DeleteArea(
+		ctx context.Context,
+		userID uuid.UUID,
+		areaID uuid.UUID,
+	) error
 }
 
 func NewAreaService(
