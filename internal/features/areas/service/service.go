@@ -18,6 +18,13 @@ type AreaRepository interface {
 		areaID uuid.UUID,
 	) (domain.Area, error)
 
+	GetAreas(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Area, error)
+
 	CreateArea(
 		ctx context.Context,
 		userID uuid.UUID,

@@ -42,6 +42,24 @@ func areaDomainFromModel(areaModel AreaModel) domain.Area {
 	)
 }
 
+func areaDomainsFromModels(areas []AreaModel) []domain.Area {
+	areaDomains := make([]domain.Area, len(areas))
+
+	for i, area := range areas {
+		areaDomains[i] = domain.Area{
+			ID:        area.ID,
+			Version:   area.Version,
+			UserID:    area.UserID,
+			Title:     area.Title,
+			Position:  area.Position,
+			CreatedAt: area.CreatedAt,
+			UpdatedAt: area.UpdatedAt,
+		}
+	}
+
+	return areaDomains
+}
+
 func scanArea(row interface{ Scan(dest ...any) error }) (AreaModel, error) {
 	var areaModel AreaModel
 	err := row.Scan(

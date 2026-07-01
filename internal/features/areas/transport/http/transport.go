@@ -23,6 +23,13 @@ type AreasService interface {
 		areaID uuid.UUID,
 	) (domain.Area, error)
 
+	GetAreas(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Area, error)
+
 	CreateArea(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -47,15 +54,21 @@ func (h *AreasHTTPHandler) Routes() []core_http_server.Route {
 
 	return []core_http_server.Route{
 		{
-			Method:     http.MethodPost,
-			Path:       "/areas",
-			Handler:    h.CreateArea,
+			Method:     http.MethodGet,
+			Path:       "/areas/{id}",
+			Handler:    h.GetArea,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodGet,
-			Path:       "/areas/{id}",
-			Handler:    h.GetArea,
+			Path:       "/areas",
+			Handler:    h.GetAreas,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/areas",
+			Handler:    h.CreateArea,
 			Middleware: auth,
 		},
 	}
