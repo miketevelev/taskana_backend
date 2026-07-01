@@ -28,6 +28,14 @@ type UserService interface {
 		patch domain.UserPatch,
 	) (domain.User, error)
 
+	ChangePassword(
+		ctx context.Context,
+		userID uuid.UUID,
+		oldPassword string,
+		newPassword string,
+		userAgent *string,
+	) (domain.TokenPair, domain.User, error)
+
 	//DeleteUser(
 	//	ctx context.Context,
 	//) error
@@ -53,6 +61,12 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodGet,
 			Path:       "/user",
 			Handler:    h.GetUser,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/user/change-password",
+			Handler:    h.ChangePassword,
 			Middleware: auth,
 		},
 		{

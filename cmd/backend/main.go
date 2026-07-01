@@ -62,7 +62,7 @@ func main() {
 
 	// Init User layers (Repository -> Service -> Handler)
 	userRepository := user_postgres_repository.NewUserRepository(pool)
-	userService := user_service.NewUsersService(userRepository)
+	userService := user_service.NewUsersService(userRepository, tokenManager)
 	userTransportHTTP := user_transport_http.NewUsersHTTPHandler(
 		userService, tokenManager,
 	)
