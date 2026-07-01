@@ -33,8 +33,10 @@ func (r *UserRepository) CheckEmail(
 	}
 
 	if exists {
-		return core_errors.ErrConflict
+		return core_errors.ErrAlreadyExists
 	}
+
+	return nil
 
 	return nil
 }

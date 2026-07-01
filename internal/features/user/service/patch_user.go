@@ -28,7 +28,7 @@ func (s *UsersService) PatchUser(
 
 	if user.Email != oldEmail {
 		if err := s.userRepository.CheckEmail(ctx, user.Email); err != nil {
-			if errors.Is(err, core_errors.ErrConflict) {
+			if errors.Is(err, core_errors.ErrAlreadyExists) {
 				return domain.User{}, fmt.Errorf(
 					"email already exists: %w", err,
 				)

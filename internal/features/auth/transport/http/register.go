@@ -65,13 +65,6 @@ func (h *AuthHTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	//if err != nil {
-	//	responseHandler.ErrorResponse(
-	//		err,
-	//		"failed to register user",
-	//	)
-	//	return
-	//}
 
 	response := RegisterAndLoginResponse{
 		Tokens: tokens,

@@ -1,6 +1,7 @@
 package user_transport_http
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -13,6 +14,7 @@ import (
 	core_http_request "github.com/miketevelev/taskana_backend/internal/core/transport/http/request"
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 	core_http_types "github.com/miketevelev/taskana_backend/internal/core/transport/http/types"
+	"go.uber.org/zap"
 )
 
 type PatchUserRequest struct {
@@ -113,6 +115,17 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 
 	userDomain, err := h.userService.PatchUser(ctx, userID, userPatch)
 	if err != nil {
+		if errors.Is(err, core_errors.ErrAlreadyExists) {
+			log.Error("failed to patch user (duplicate email)", zap.Error(err))
+			responseHandler.JSONResponse(
+				map[string]string{
+					"error":   "failed to patch user",
+					"message": "email is already exists",
+				},
+				http.StatusConflict,
+			)
+			return
+		}
 		responseHandler.ErrorResponse(
 			err,
 			"failed to patch user",
