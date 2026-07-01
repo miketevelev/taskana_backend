@@ -17,7 +17,7 @@ func (r *AuthRepository) CreateUser(
 	defer cancel()
 
 	query := `
-		INSERT INTO taskana.user (first_name, last_name, email, 
+		INSERT INTO taskana.users (first_name, last_name, email, 
 password_hash, timezone)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, version, first_name, last_name, email, password_hash, 
@@ -72,7 +72,7 @@ func (r *AuthRepository) GetUserByEmail(
 	query := `
 		SELECT id, version, first_name, last_name, email, password_hash, 
 timezone, created_at, updated_at
-		FROM taskana.user
+		FROM taskana.users
 		WHERE email = $1
 	`
 

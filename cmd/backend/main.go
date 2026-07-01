@@ -14,6 +14,9 @@ import (
 	core_pgx_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/miketevelev/taskana_backend/internal/core/transport/http/middleware"
 	core_http_server "github.com/miketevelev/taskana_backend/internal/core/transport/http/server"
+	areas_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/areas/repository/postgres"
+	areas_service "github.com/miketevelev/taskana_backend/internal/features/areas/service"
+	areas_transport_http "github.com/miketevelev/taskana_backend/internal/features/areas/transport/http"
 	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
 	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
@@ -67,6 +70,13 @@ func main() {
 		userService, tokenManager,
 	)
 
+	// Init Area layers (Repository -> Service -> Handler)
+	areasRepository := areas_postgres_repository.NewAreasRepository(pool)
+	areasService := areas_service.NewAreaService(areasRepository)
+	areasTransportHTTP := areas_transport_http.NewAreasHTTPHandler(
+		areasService, tokenManager,
+	)
+
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
 
@@ -84,6 +94,7 @@ func main() {
 	apiVersionRouter := core_http_server.NewAPIVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(authTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(areasTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 

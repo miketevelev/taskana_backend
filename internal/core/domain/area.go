@@ -40,9 +40,25 @@ func NewArea(
 	}
 }
 
+func NewAreaUninitialized(
+	userID uuid.UUID,
+	title string,
+) Area {
+	now := time.Now().UTC()
+	return Area{
+		ID:        UninitializedID,
+		Version:   UninitializedVersion,
+		UserID:    userID,
+		Title:     title,
+		Position:  0,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+}
+
 func (a *Area) Validate() error {
 	titleLength := len([]rune(strings.TrimSpace(a.Title)))
-	if titleLength == 0 || titleLength > 255 {
+	if titleLength < 3 || titleLength > 100 {
 		return fmt.Errorf(
 			"title must be between 1 and 255 characters long: %w",
 			core_errors.ErrInvalidArgument,

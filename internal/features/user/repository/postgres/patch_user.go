@@ -21,7 +21,7 @@ func (r *UserRepository) CheckEmail(
 	query := `
 		SELECT EXISTS(
 			SELECT 1 
-			FROM taskana.user 
+			FROM taskana.users
 			WHERE email = $1
 		);
 	`
@@ -50,7 +50,7 @@ func (r *UserRepository) PatchUser(
 	defer cancel()
 
 	query := `
-	UPDATE taskana.user
+	UPDATE taskana.users
 	SET
 		first_name = $1,
 		last_name = $2,

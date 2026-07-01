@@ -43,7 +43,7 @@ func (r *UserRepository) ChangePassword(
 	defer cancel()
 
 	query := `
-		UPDATE taskana.user
+		UPDATE taskana.users
 		SET
 			password_hash = $1,
 			updated_at = NOW(),
@@ -99,7 +99,7 @@ func (r *UserRepository) GetUserByID(
 	query := `
 		SELECT id, version, first_name, last_name, email, password_hash, 
 timezone, created_at, updated_at
-		FROM taskana.user
+		FROM taskana.users
 		WHERE id = $1
 	`
 

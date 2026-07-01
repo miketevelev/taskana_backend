@@ -18,7 +18,7 @@ func (r *UserRepository) GetUser(
 	query := `
 		SELECT id, version, first_name, last_name, email, password_hash, 
 timezone, created_at, updated_at
-		FROM taskana.user
+		FROM taskana.users
 		WHERE id = $1;
 		`
 
