@@ -90,12 +90,12 @@ timezone, created_at, updated_at
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{},
 				fmt.Errorf(
-					"user with id='%s' concurrently accessed or not found: %w",
+					"users with id='%s' concurrently accessed or not found: %w",
 					userID,
 					core_errors.ErrConflict,
 				)
 		}
-		return domain.User{}, fmt.Errorf("patch user repository: %w", err)
+		return domain.User{}, fmt.Errorf("patch users repository: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)

@@ -21,7 +21,7 @@ func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to get user",
+			"failed to get users",
 		)
 		return
 	}

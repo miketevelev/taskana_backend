@@ -34,7 +34,7 @@ func (s *UsersService) ChangePassword(
 	user, err := s.userRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return domain.TokenPair{}, domain.User{}, fmt.Errorf(
-			"get user by ID: %w", err,
+			"get users by ID: %w", err,
 		)
 	}
 

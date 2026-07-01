@@ -76,7 +76,7 @@ timezone, created_at, updated_at
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
-				"user with id='%s' concurrently accessed or not found: %w",
+				"users with id='%s' concurrently accessed or not found: %w",
 				user.ID,
 				core_errors.ErrConflict,
 			)
@@ -122,7 +122,7 @@ timezone, created_at, updated_at
 		&userModel.UpdatedAt,
 	)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)

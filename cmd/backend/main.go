@@ -17,9 +17,9 @@ import (
 	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
 	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
-	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/user/repository/postgres"
-	user_service "github.com/miketevelev/taskana_backend/internal/features/user/service"
-	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/user/transport/http"
+	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/users/repository/postgres"
+	user_service "github.com/miketevelev/taskana_backend/internal/features/users/service"
+	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/users/transport/http"
 	"go.uber.org/zap"
 
 	_ "time/tzdata"

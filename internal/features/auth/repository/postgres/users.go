@@ -49,12 +49,12 @@ timezone, created_at, updated_at
 	if err != nil {
 		if strings.Contains(err.Error(), "23505") {
 			return domain.User{}, fmt.Errorf(
-				"user with this email already exists: %w",
+				"users with this email already exists: %w",
 				core_errors.ErrAlreadyExists,
 			)
 		}
 
-		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)
@@ -95,7 +95,7 @@ timezone, created_at, updated_at
 		&userModel.UpdatedAt,
 	)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
+		return domain.User{}, fmt.Errorf("scan users from db: %w", err)
 	}
 
 	userDomain := userDomainFromModel(userModel)

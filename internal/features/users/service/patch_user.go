@@ -17,13 +17,13 @@ func (s *UsersService) PatchUser(
 ) (domain.User, error) {
 	user, err := s.userRepository.GetUser(ctx, userID)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("get user service: %w", err)
+		return domain.User{}, fmt.Errorf("get users service: %w", err)
 	}
 
 	oldEmail := user.Email
 
 	if err := user.ApplyPatch(patch); err != nil {
-		return domain.User{}, fmt.Errorf("patch user service: %w", err)
+		return domain.User{}, fmt.Errorf("patch users service: %w", err)
 	}
 
 	if user.Email != oldEmail {
@@ -39,7 +39,7 @@ func (s *UsersService) PatchUser(
 
 	patchedUser, err := s.userRepository.PatchUser(ctx, userID, user)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("patch user service: %w", err)
+		return domain.User{}, fmt.Errorf("patch users service: %w", err)
 	}
 
 	return patchedUser, nil
