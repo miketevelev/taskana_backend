@@ -9,7 +9,7 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func (s *AreaService) GetAreas(
+func (s *AreasService) GetAreas(
 	ctx context.Context,
 	userID uuid.UUID,
 	limit *int,
@@ -28,7 +28,7 @@ func (s *AreaService) GetAreas(
 		)
 	}
 
-	areas, err := s.areaRepository.GetAreas(ctx, userID, limit, offset)
+	areas, err := s.areasRepository.GetAreas(ctx, userID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("get areas from repository: %w", err)
 	}

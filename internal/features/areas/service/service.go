@@ -7,11 +7,11 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-type AreaService struct {
-	areaRepository AreaRepository
+type AreasService struct {
+	areasRepository AreasRepository
 }
 
-type AreaRepository interface {
+type AreasRepository interface {
 	GetArea(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -51,10 +51,10 @@ type AreaRepository interface {
 	) error
 }
 
-func NewAreaService(
-	areaRepository AreaRepository,
-) *AreaService {
-	return &AreaService{
-		areaRepository: areaRepository,
+func NewAreasService(
+	areaRepository AreasRepository,
+) *AreasService {
+	return &AreasService{
+		areasRepository: areaRepository,
 	}
 }

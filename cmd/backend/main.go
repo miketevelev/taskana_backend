@@ -20,6 +20,9 @@ import (
 	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
 	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
+	projects_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/projects/repository/postgres"
+	projects_service "github.com/miketevelev/taskana_backend/internal/features/projects/service"
+	projects_transport_http "github.com/miketevelev/taskana_backend/internal/features/projects/transport/http"
 	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/user/repository/postgres"
 	user_service "github.com/miketevelev/taskana_backend/internal/features/user/service"
 	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/user/transport/http"
@@ -72,9 +75,16 @@ func main() {
 
 	// Init Area layers (Repository -> Service -> Handler)
 	areasRepository := areas_postgres_repository.NewAreasRepository(pool)
-	areasService := areas_service.NewAreaService(areasRepository)
+	areasService := areas_service.NewAreasService(areasRepository)
 	areasTransportHTTP := areas_transport_http.NewAreasHTTPHandler(
 		areasService, tokenManager,
+	)
+
+	// Init Project layers (Repository -> Service -> Handler)
+	projectsRepository := projects_postgres_repository.NewProjectRepository(pool)
+	projectsService := projects_service.NewProjectService(projectsRepository)
+	projectsTransportHTTP := projects_transport_http.NewProjectsHTTPHandler(
+		projectsService, tokenManager,
 	)
 
 	// Rate Limiter Janitor
@@ -95,6 +105,7 @@ func main() {
 	apiVersionRouter.RegisterRoutes(authTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(areasTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(projectsTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 

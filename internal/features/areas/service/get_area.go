@@ -8,12 +8,12 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *AreaService) GetArea(
+func (s *AreasService) GetArea(
 	ctx context.Context,
 	userID uuid.UUID,
 	areaID uuid.UUID,
 ) (domain.Area, error) {
-	area, err := s.areaRepository.GetArea(ctx, userID, areaID)
+	area, err := s.areasRepository.GetArea(ctx, userID, areaID)
 	if err != nil {
 		return domain.Area{}, fmt.Errorf(
 			"failed to decode area request: %w", err,

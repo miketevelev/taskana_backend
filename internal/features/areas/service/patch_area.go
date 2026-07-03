@@ -8,13 +8,13 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *AreaService) PatchArea(
+func (s *AreasService) PatchArea(
 	ctx context.Context,
 	userID uuid.UUID,
 	areaID uuid.UUID,
 	patch domain.AreaPatch,
 ) (domain.Area, error) {
-	area, err := s.areaRepository.GetArea(ctx, userID, areaID)
+	area, err := s.areasRepository.GetArea(ctx, userID, areaID)
 	if err != nil {
 		return domain.Area{}, fmt.Errorf("error while fetching area: %w", err)
 	}
@@ -28,14 +28,14 @@ func (s *AreaService) PatchArea(
 
 	var patchedArea domain.Area
 	if patch.Position.Set && area.Position != oldPosition {
-		patchedArea, err = s.areaRepository.PatchAreaWithReordering(
+		patchedArea, err = s.areasRepository.PatchAreaWithReordering(
 			ctx,
 			userID,
 			area,
 			oldPosition,
 		)
 	} else {
-		patchedArea, err = s.areaRepository.PatchArea(ctx, userID, area)
+		patchedArea, err = s.areasRepository.PatchArea(ctx, userID, area)
 	}
 	if err != nil {
 		return domain.Area{}, fmt.Errorf(

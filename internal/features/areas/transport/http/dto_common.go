@@ -17,15 +17,15 @@ type AreaDTOResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func areaDTOFromDomain(t domain.Area) AreaDTOResponse {
+func areaDTOFromDomain(area domain.Area) AreaDTOResponse {
 	return AreaDTOResponse{
-		ID:        t.ID,
-		Version:   t.Version,
-		UserID:    t.UserID,
-		Title:     t.Title,
-		Position:  t.Position,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
+		ID:        area.ID,
+		Version:   area.Version,
+		UserID:    area.UserID,
+		Title:     area.Title,
+		Position:  area.Position,
+		CreatedAt: area.CreatedAt,
+		UpdatedAt: area.UpdatedAt,
 	}
 }
 

@@ -34,7 +34,7 @@ func (r *AreasRepository) CreateArea(
 		ctx,
 		query,
 		area.ID,
-		area.UserID,
+		userID,
 		area.Title,
 		area.CreatedAt,
 		area.UpdatedAt,
