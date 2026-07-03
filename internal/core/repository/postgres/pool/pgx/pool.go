@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
@@ -47,6 +48,10 @@ func NewPool(
 	}, nil
 }
 
+// -----------------------------------------------------------------------------
+// Overridden Pool methods
+// -----------------------------------------------------------------------------
+
 func (p *Pool) Query(ctx context.Context, sql string, args ...any) (
 	core_postgres_pool.Rows,
 	error,
@@ -83,4 +88,61 @@ func (p *Pool) Exec(ctx context.Context, sql string, arguments ...any) (
 
 func (p *Pool) OpTimeout() time.Duration {
 	return p.opTimeout
+}
+
+func (p *Pool) Begin(ctx context.Context) (core_postgres_pool.Tx, error) {
+	tx, err := p.Pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return pgxTx{tx}, nil
+}
+
+// -----------------------------------------------------------------------------
+// Transaction Implementation (Adapter)
+// -----------------------------------------------------------------------------
+
+type pgxTx struct {
+	tx pgx.Tx
+}
+
+func (t pgxTx) Query(
+	ctx context.Context,
+	sql string,
+	args ...any,
+) (core_postgres_pool.Rows, error) {
+	rows, err := t.tx.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	return pgxRows{rows}, nil
+}
+
+func (t pgxTx) QueryRow(
+	ctx context.Context,
+	sql string,
+	args ...any,
+) core_postgres_pool.Row {
+	row := t.tx.QueryRow(ctx, sql, args...)
+	return pgxRow{row}
+}
+
+func (t pgxTx) Exec(
+	ctx context.Context,
+	sql string,
+	args ...any,
+) (core_postgres_pool.CommandTag, error) {
+	tag, err := t.tx.Exec(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	return pgxCommandTag{tag}, nil
+}
+
+func (t pgxTx) Commit(ctx context.Context) error {
+	return t.tx.Commit(ctx)
+}
+
+func (t pgxTx) Rollback(ctx context.Context) error {
+	return t.tx.Rollback(ctx)
 }

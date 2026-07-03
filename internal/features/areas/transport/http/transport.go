@@ -36,6 +36,13 @@ type AreasService interface {
 		area domain.Area,
 	) (domain.Area, error)
 
+	PatchArea(
+		ctx context.Context,
+		userID uuid.UUID,
+		areaID uuid.UUID,
+		patch domain.AreaPatch,
+	) (domain.Area, error)
+
 	DeleteArea(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -75,6 +82,12 @@ func (h *AreasHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/areas",
 			Handler:    h.CreateArea,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPatch,
+			Path:       "/areas/{id}",
+			Handler:    h.PatchArea,
 			Middleware: auth,
 		},
 		{

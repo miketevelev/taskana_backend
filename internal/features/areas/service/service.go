@@ -31,6 +31,19 @@ type AreaRepository interface {
 		area domain.Area,
 	) (domain.Area, error)
 
+	PatchArea(
+		ctx context.Context,
+		userID uuid.UUID,
+		area domain.Area,
+	) (domain.Area, error)
+
+	PatchAreaWithReordering(
+		ctx context.Context,
+		userID uuid.UUID,
+		area domain.Area,
+		oldPos int,
+	) (domain.Area, error)
+
 	DeleteArea(
 		ctx context.Context,
 		userID uuid.UUID,
