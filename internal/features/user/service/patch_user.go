@@ -22,6 +22,13 @@ func (s *UsersService) PatchUser(
 
 	oldEmail := user.Email
 
+	if patch.Email.Value != nil && *patch.Email.Value == oldEmail {
+		return domain.User{}, fmt.Errorf(
+			"email address is the same as old email: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
 	if err := user.ApplyPatch(patch); err != nil {
 		return domain.User{}, fmt.Errorf("patch user service: %w", err)
 	}

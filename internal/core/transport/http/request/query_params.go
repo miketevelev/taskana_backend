@@ -10,7 +10,7 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func GetUserIdLimitOffsetQueryParams(r *http.Request) (
+func GetLimitOffsetQueryParams(r *http.Request) (
 	*int,
 	*int,
 	error,

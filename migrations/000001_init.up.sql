@@ -40,6 +40,7 @@ CREATE INDEX idx_refresh_tokens_user_id ON taskana.refresh_tokens (user_id);
 CREATE TABLE taskana.areas
 (
     id         UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
+    version       bigint       not null default 1,
     user_id    UUID         NOT NULL REFERENCES taskana.users (id) ON DELETE CASCADE,
     title      VARCHAR(255) NOT NULL,
     position   INTEGER      NOT NULL DEFAULT 0,

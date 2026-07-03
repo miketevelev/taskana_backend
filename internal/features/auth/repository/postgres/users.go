@@ -34,18 +34,7 @@ timezone, created_at, updated_at
 		user.Timezone,
 	)
 
-	var userModel UserModel
-	err := row.Scan(
-		&userModel.ID,
-		&userModel.Version,
-		&userModel.FirstName,
-		&userModel.LastName,
-		&userModel.Email,
-		&userModel.PasswordHash,
-		&userModel.Timezone,
-		&userModel.CreatedAt,
-		&userModel.UpdatedAt,
-	)
+	userModel, err := scanUser(row)
 	if err != nil {
 		if strings.Contains(err.Error(), "23505") {
 			return domain.User{}, fmt.Errorf(
@@ -82,18 +71,7 @@ timezone, created_at, updated_at
 		email,
 	)
 
-	var userModel UserModel
-	err := row.Scan(
-		&userModel.ID,
-		&userModel.Version,
-		&userModel.FirstName,
-		&userModel.LastName,
-		&userModel.Email,
-		&userModel.PasswordHash,
-		&userModel.Timezone,
-		&userModel.CreatedAt,
-		&userModel.UpdatedAt,
-	)
+	userModel, err := scanUser(row)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}

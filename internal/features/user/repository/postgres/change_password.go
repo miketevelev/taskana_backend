@@ -61,18 +61,7 @@ timezone, created_at, updated_at
 		user.Version,
 	)
 
-	var userModel UserModel
-	err := row.Scan(
-		&userModel.ID,
-		&userModel.Version,
-		&userModel.FirstName,
-		&userModel.LastName,
-		&userModel.Email,
-		&userModel.PasswordHash,
-		&userModel.Timezone,
-		&userModel.CreatedAt,
-		&userModel.UpdatedAt,
-	)
+	userModel, err := scanUser(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
@@ -109,18 +98,7 @@ timezone, created_at, updated_at
 		id,
 	)
 
-	var userModel UserModel
-	err := row.Scan(
-		&userModel.ID,
-		&userModel.Version,
-		&userModel.FirstName,
-		&userModel.LastName,
-		&userModel.Email,
-		&userModel.PasswordHash,
-		&userModel.Timezone,
-		&userModel.CreatedAt,
-		&userModel.UpdatedAt,
-	)
+	userModel, err := scanUser(row)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("scan user from db: %w", err)
 	}
