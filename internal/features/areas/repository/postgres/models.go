@@ -43,6 +43,9 @@ func areaDomainFromModel(areaModel AreaModel) domain.Area {
 }
 
 func areaDomainsFromModels(areas []AreaModel) []domain.Area {
+	if len(areas) == 0 {
+		return []domain.Area{}
+	}
 	areaDomains := make([]domain.Area, len(areas))
 
 	for i, area := range areas {

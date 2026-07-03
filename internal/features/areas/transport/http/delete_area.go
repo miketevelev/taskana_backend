@@ -16,7 +16,7 @@ func (h *AreasHTTPHandler) DeleteArea(w http.ResponseWriter, r *http.Request) {
 
 	userID := core_auth.MustUserIDFromContext(ctx)
 
-	taskID, err := core_http_request.GetUUIDPathValue(r, "id")
+	areaID, err := core_http_request.GetUUIDPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -25,7 +25,7 @@ func (h *AreasHTTPHandler) DeleteArea(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.areasService.DeleteArea(ctx, userID, taskID); err != nil {
+	if err := h.areasService.DeleteArea(ctx, userID, areaID); err != nil {
 		responseHandler.ErrorResponse(
 			err,
 			"failed to delete area",

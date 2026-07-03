@@ -20,23 +20,17 @@ func (r *AreasRepository) GetAreas(
 	query := `
 		SELECT id, version, user_id, title, position, created_at, updated_at
 		FROM taskana.areas
-		%s
-		ORDER BY id ASC
-		LIMIT $1 OFFSET $2;`
-
-	args := []any{limit, offset}
-
-	if userID != uuid.Nil {
-		query = fmt.Sprintf(query, "WHERE user_id = $3")
-		args = append(args, userID)
-	} else {
-		query = fmt.Sprintf(query, "")
-	}
+		WHERE user_id = $1
+		ORDER BY position ASC, created_at ASC
+		LIMIT $2 OFFSET $3;
+	`
 
 	rows, err := r.pool.Query(
 		ctx,
 		query,
-		args...,
+		userID,
+		limit,
+		offset,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("select areas: %w", err)
@@ -44,13 +38,15 @@ func (r *AreasRepository) GetAreas(
 	defer rows.Close()
 
 	var areaModels []AreaModel
+
 	for rows.Next() {
 		areaModel, err := scanArea(rows)
 		if err != nil {
-			return []domain.Area{}, fmt.Errorf("scan area from db: %w", err)
+			return nil, fmt.Errorf("scan area from db: %w", err)
 		}
 		areaModels = append(areaModels, areaModel)
 	}
+
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("next rows: %w", err)
 	}

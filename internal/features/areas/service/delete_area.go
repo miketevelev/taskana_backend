@@ -13,7 +13,7 @@ func (s *AreaService) DeleteArea(
 	areaID uuid.UUID,
 ) error {
 	if err := s.areaRepository.DeleteArea(ctx, userID, areaID); err != nil {
-		return fmt.Errorf("delete task: %w", err)
+		return fmt.Errorf("delete area: %w", err)
 	}
 
 	return nil
