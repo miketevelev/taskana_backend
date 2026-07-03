@@ -27,7 +27,7 @@ func (r *AreasRepository) DeleteArea(
 	}
 	if cmdTag.RowsAffected() == 0 {
 		return fmt.Errorf(
-			"no area found with id '%d': %w",
+			"no area found with id '%s': %w",
 			areaID,
 			core_errors.ErrNotFound,
 		)

@@ -2,10 +2,13 @@ package projects_postgres_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
+	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
 
 func (r *ProjectRepository) CreateProject(
@@ -50,6 +53,13 @@ notes, status, position, deadline, completed_at, created_at, updated_at
 
 	projectModel, err := scanProject(row)
 	if err != nil {
+		if errors.Is(err, core_postgres_pool.ErrViolateForeignKey) {
+			return domain.Project{}, fmt.Errorf(
+				"user or area not found for new project: %w",
+				core_errors.ErrNotFound,
+			)
+		}
+
 		return domain.Project{}, fmt.Errorf("scan project from db: %w", err)
 	}
 

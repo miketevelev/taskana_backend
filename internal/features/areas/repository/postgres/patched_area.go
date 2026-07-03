@@ -46,9 +46,13 @@ func (r *AreasRepository) PatchArea(
 	areaModel, err := scanArea(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Area{}, core_errors.ErrNotFound
+			return domain.Area{}, fmt.Errorf(
+				"area with id='%s' concurrently accessed: %w",
+				area.ID,
+				core_errors.ErrConflict,
+			)
 		}
-		return domain.Area{}, err
+		return domain.Area{}, fmt.Errorf("patch area repository: %w", err)
 	}
 
 	areaDomain := areaDomainFromModel(areaModel)
@@ -132,16 +136,22 @@ func (r *AreasRepository) PatchAreaWithReordering(
 	areaModel, err := scanArea(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Area{}, core_errors.ErrNotFound
+			return domain.Area{}, fmt.Errorf(
+				"area with id='%s' concurrently accessed: %w",
+				area.ID,
+				core_errors.ErrConflict,
+			)
 		}
-		return domain.Area{}, err
+		return domain.Area{}, fmt.Errorf("patch area repository: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
 		return domain.Area{}, fmt.Errorf(
-			"failed to commit transaction: %w", err,
+			"failed to commit reordering transaction: %w", err,
 		)
 	}
 
-	return areaDomainFromModel(areaModel), nil
+	areaDomain := areaDomainFromModel(areaModel)
+
+	return areaDomain, nil
 }

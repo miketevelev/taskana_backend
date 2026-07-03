@@ -12,6 +12,12 @@ type ProjectService struct {
 }
 
 type ProjectsRepository interface {
+	GetProject(
+		ctx context.Context,
+		userID uuid.UUID,
+		projectID uuid.UUID,
+	) (domain.Project, error)
+
 	CreateProject(
 		ctx context.Context,
 		userID uuid.UUID,

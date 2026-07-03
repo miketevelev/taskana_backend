@@ -16,7 +16,7 @@ func (s *AreasService) GetArea(
 	area, err := s.areasRepository.GetArea(ctx, userID, areaID)
 	if err != nil {
 		return domain.Area{}, fmt.Errorf(
-			"failed to decode area request: %w", err,
+			"error getting area: %w", err,
 		)
 	}
 

@@ -179,6 +179,7 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 	}
 
 	tmp := *p
+	now := time.Now().UTC()
 
 	if patch.Title.Set {
 		tmp.Title = *patch.Title.Value
@@ -203,7 +204,7 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 	}
 
 	if patch.Status.Set && tmp.Status == ProjectStatusCompleted && !patch.CompletedAt.Set {
-		tmp.CompletedAt = new(time.Now().UTC())
+		tmp.CompletedAt = &now
 	}
 	if patch.Status.Set && tmp.Status != ProjectStatusCompleted && !patch.CompletedAt.Set {
 		tmp.CompletedAt = nil

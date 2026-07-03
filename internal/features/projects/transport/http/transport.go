@@ -17,6 +17,12 @@ type ProjectsHTTPHandler struct {
 }
 
 type ProjectsService interface {
+	GetProject(
+		ctx context.Context,
+		userID uuid.UUID,
+		projectID uuid.UUID,
+	) (domain.Project, error)
+
 	CreateProject(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -40,6 +46,12 @@ func (h *ProjectsHTTPHandler) Routes() []core_http_server.Route {
 	}
 
 	return []core_http_server.Route{
+		{
+			Method:     http.MethodGet,
+			Path:       "/projects/{id}",
+			Handler:    h.GetProject,
+			Middleware: auth,
+		},
 		{
 			Method:     http.MethodPost,
 			Path:       "/projects",
