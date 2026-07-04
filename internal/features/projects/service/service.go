@@ -18,11 +18,24 @@ type ProjectsRepository interface {
 		projectID uuid.UUID,
 	) (domain.Project, error)
 
+	GetProjects(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Project, error)
+
 	CreateProject(
 		ctx context.Context,
 		userID uuid.UUID,
 		project domain.Project,
 	) (domain.Project, error)
+
+	DeleteProject(
+		ctx context.Context,
+		userID uuid.UUID,
+		projectID uuid.UUID,
+	) error
 }
 
 func NewProjectService(

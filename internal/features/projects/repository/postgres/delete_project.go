@@ -1,4 +1,4 @@
-package areas_postgres_repository
+package projects_postgres_repository
 
 import (
 	"context"
@@ -8,28 +8,28 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func (r *AreasRepository) DeleteArea(
+func (r *ProjectRepository) DeleteProject(
 	ctx context.Context,
 	userID uuid.UUID,
-	areaID uuid.UUID,
+	projectID uuid.UUID,
 ) error {
-	// todo: area must deleted all projects and tasks inside
+	// todo: area must deleted all tasks inside
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
-		DELETE FROM taskana.areas 
+		DELETE FROM taskana.projects
 		WHERE id = $1 AND user_id = $2;
 	`
 
-	cmdTag, err := r.pool.Exec(ctx, query, areaID, userID)
+	cmdTag, err := r.pool.Exec(ctx, query, projectID, userID)
 	if err != nil {
 		return fmt.Errorf("exec query: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
 		return fmt.Errorf(
-			"no area found with id '%s': %w",
-			areaID,
+			"no project found with id '%s': %w",
+			projectID,
 			core_errors.ErrNotFound,
 		)
 	}

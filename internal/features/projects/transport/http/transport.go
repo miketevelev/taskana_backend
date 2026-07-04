@@ -23,11 +23,24 @@ type ProjectsService interface {
 		projectID uuid.UUID,
 	) (domain.Project, error)
 
+	GetProjects(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Project, error)
+
 	CreateProject(
 		ctx context.Context,
 		userID uuid.UUID,
 		project domain.Project,
 	) (domain.Project, error)
+
+	DeleteProject(
+		ctx context.Context,
+		userID uuid.UUID,
+		projectID uuid.UUID,
+	) error
 }
 
 func NewProjectsHTTPHandler(
@@ -53,9 +66,21 @@ func (h *ProjectsHTTPHandler) Routes() []core_http_server.Route {
 			Middleware: auth,
 		},
 		{
+			Method:     http.MethodGet,
+			Path:       "/projects",
+			Handler:    h.GetProjects,
+			Middleware: auth,
+		},
+		{
 			Method:     http.MethodPost,
 			Path:       "/projects",
 			Handler:    h.CreateProject,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/projects/{id}",
+			Handler:    h.DeleteProject,
 			Middleware: auth,
 		},
 	}
