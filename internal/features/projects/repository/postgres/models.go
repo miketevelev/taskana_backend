@@ -23,23 +23,6 @@ type ProjectModel struct {
 	UpdatedAt   time.Time            `json:"updated_at,omitempty"`
 }
 
-func projectFromModel(projectModel ProjectModel) domain.Project {
-	return domain.Project{
-		ID:          projectModel.ID,
-		Version:     projectModel.Version,
-		UserID:      projectModel.UserID,
-		AreaID:      projectModel.AreaID,
-		Title:       projectModel.Title,
-		Notes:       projectModel.Notes,
-		Status:      projectModel.Status,
-		Position:    projectModel.Position,
-		Deadline:    projectModel.Deadline,
-		CompletedAt: projectModel.CompletedAt,
-		CreatedAt:   projectModel.CreatedAt,
-		UpdatedAt:   projectModel.UpdatedAt,
-	}
-}
-
 func projectDomainFromModel(projectModel ProjectModel) domain.Project {
 	return domain.Project{
 		ID:          projectModel.ID,

@@ -45,15 +45,15 @@ func NewAreaUninitialized(
 	title string,
 ) Area {
 	now := time.Now().UTC()
-	return Area{
-		ID:        UninitializedID,
-		Version:   UninitializedVersion,
-		UserID:    userID,
-		Title:     title,
-		Position:  1,
-		CreatedAt: now,
-		UpdatedAt: now,
-	}
+	return NewArea(
+		UninitializedID,
+		UninitializedVersion,
+		userID,
+		title,
+		1,
+		now,
+		now,
+	)
 }
 
 func (a *Area) Validate() error {

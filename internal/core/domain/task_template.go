@@ -78,6 +78,37 @@ func NewTaskTemplate(
 	}
 }
 
+func NewTaskTemplateUninitialized(
+	userId uuid.UUID,
+	projectID *uuid.UUID,
+	headingID *uuid.UUID,
+	title string,
+	notes *string,
+	recurrenceRule string,
+	nextExecutionDate time.Time,
+	isTimeTracked bool,
+	estimatedPomodoros int,
+) TaskTemplate {
+	now := time.Now().UTC()
+	return NewTaskTemplate(
+		UninitializedID,
+		UninitializedVersion,
+		userId,
+		projectID,
+		headingID,
+		title,
+		notes,
+		recurrenceRule,
+		RecurrenceTypeFixed,
+		TargetBucketInbox,
+		nextExecutionDate,
+		isTimeTracked,
+		estimatedPomodoros,
+		now,
+		now,
+	)
+}
+
 func (t *TaskTemplate) Validate() error {
 	titleLength := len([]rune(strings.TrimSpace(t.Title)))
 	if titleLength < 3 || titleLength > 255 {
@@ -229,13 +260,45 @@ type TaskTemplatePatch struct {
 }
 
 func (p *TaskTemplatePatch) Validate() error {
-	if p.Title.Set && (p.Title.Value == nil || len([]rune(strings.TrimSpace(*p.Title.Value))) < 3) {
+	if p.Title.Set {
+		if p.Title.Value == nil || len([]rune(strings.TrimSpace(*p.Title.Value))) < 3 {
+			return fmt.Errorf(
+				"invalid title in patch (cannot be null or too short): %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
+	}
+
+	if p.RecurrenceRule.Set {
+		if p.RecurrenceRule.Value == nil || strings.TrimSpace(*p.RecurrenceRule.Value) == "" {
+			return fmt.Errorf(
+				"recurrence_rule cannot be null or empty in patch: %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
+	}
+
+	if p.NextExecutionDate.Set && p.NextExecutionDate.Value == nil {
 		return fmt.Errorf(
-			"invalid title in patch: %w", core_errors.ErrInvalidArgument,
+			"next_execution_date cannot be null in patch: %w",
+			core_errors.ErrInvalidArgument,
 		)
 	}
 
-	if p.RecurrenceType.Set && p.RecurrenceType.Value != nil {
+	if p.IsTimeTracked.Set && p.IsTimeTracked.Value == nil {
+		return fmt.Errorf(
+			"is_time_tracked cannot be null in patch: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	if p.RecurrenceType.Set {
+		if p.RecurrenceType.Value == nil {
+			return fmt.Errorf(
+				"recurrence_type cannot be null in patch: %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
 		switch *p.RecurrenceType.Value {
 		case RecurrenceTypeFixed, RecurrenceTypeFromCompletion:
 		default:
@@ -246,7 +309,13 @@ func (p *TaskTemplatePatch) Validate() error {
 		}
 	}
 
-	if p.TargetBucket.Set && p.TargetBucket.Value != nil {
+	if p.TargetBucket.Set {
+		if p.TargetBucket.Value == nil {
+			return fmt.Errorf(
+				"target_bucket cannot be null in patch: %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
 		switch *p.TargetBucket.Value {
 		case TargetBucketToday, TargetBucketInbox:
 		default:
@@ -257,11 +326,13 @@ func (p *TaskTemplatePatch) Validate() error {
 		}
 	}
 
-	if p.EstimatedPomodoros.Set && p.EstimatedPomodoros.Value != nil && *p.EstimatedPomodoros.Value < 0 {
-		return fmt.Errorf(
-			"patch pomodoros cannot be negative: %w",
-			core_errors.ErrInvalidArgument,
-		)
+	if p.EstimatedPomodoros.Set {
+		if p.EstimatedPomodoros.Value == nil || *p.EstimatedPomodoros.Value < 0 {
+			return fmt.Errorf(
+				"patch pomodoros cannot be null or negative: %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
 	}
 
 	return nil

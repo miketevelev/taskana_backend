@@ -20,6 +20,9 @@ import (
 	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
 	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
+	heading_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/headings/reporitory/postgres"
+	headings_service "github.com/miketevelev/taskana_backend/internal/features/headings/service"
+	headings_transport_http "github.com/miketevelev/taskana_backend/internal/features/headings/transport/http"
 	projects_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/projects/repository/postgres"
 	projects_service "github.com/miketevelev/taskana_backend/internal/features/projects/service"
 	projects_transport_http "github.com/miketevelev/taskana_backend/internal/features/projects/transport/http"
@@ -87,6 +90,13 @@ func main() {
 		projectsService, tokenManager,
 	)
 
+	// Init Heading layers (Repository -> Service -> Handler)
+	headingRepository := heading_postgres_repository.NewHeadingRepository(pool)
+	headingService := headings_service.NewHeadingService(headingRepository)
+	headingTransportHTTP := headings_transport_http.NewHeadingHTTPHandler(
+		headingService, tokenManager,
+	)
+
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
 
@@ -106,6 +116,7 @@ func main() {
 	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(areasTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(projectsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(headingTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 

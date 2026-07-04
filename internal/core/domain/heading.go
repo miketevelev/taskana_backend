@@ -49,16 +49,16 @@ func NewHeadingUninitialized(
 	title string,
 ) Heading {
 	now := time.Now().UTC()
-	return Heading{
-		ID:        UninitializedID,
-		Version:   UninitializedVersion,
-		UserID:    userID,
-		ProjectID: projectID,
-		Title:     title,
-		Position:  1,
-		CreatedAt: now,
-		UpdatedAt: now,
-	}
+	return NewHeading(
+		UninitializedID,
+		UninitializedVersion,
+		userID,
+		projectID,
+		title,
+		1,
+		now,
+		now,
+	)
 }
 
 func (h *Heading) Validate() error {

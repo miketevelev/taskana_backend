@@ -96,33 +96,32 @@ func NewTaskUninitialized(
 	headingID *uuid.UUID,
 	title string,
 	notes *string,
-	bucket TaskBucket,
 	startDate *time.Time,
 	deadline *time.Time,
 	isTimeTracked bool,
 	estimatedPomodoros int,
 ) Task {
 	now := time.Now().UTC()
-	return Task{
-		ID:                 UninitializedID,
-		Version:            UninitializedVersion,
-		UserID:             userID,
-		ProjectID:          projectID,
-		HeadingID:          headingID,
-		TemplateID:         nil,
-		Title:              title,
-		Notes:              notes,
-		Status:             TaskStatusOpen,
-		Bucket:             bucket,
-		StartDate:          startDate,
-		Deadline:           deadline,
-		Position:           1,
-		IsTimeTracked:      isTimeTracked,
-		EstimatedPomodoros: estimatedPomodoros,
-		CompletedAt:        nil,
-		CreatedAt:          now,
-		UpdatedAt:          now,
-	}
+	return NewTask(
+		UninitializedID,
+		UninitializedVersion,
+		userID,
+		projectID,
+		headingID,
+		nil,
+		title,
+		notes,
+		TaskStatusOpen,
+		TaskBucketInbox,
+		startDate,
+		deadline,
+		1,
+		isTimeTracked,
+		estimatedPomodoros,
+		nil,
+		now,
+		now,
+	)
 }
 
 func (t *Task) Validate() error {

@@ -33,7 +33,10 @@ func (s *ProjectService) CreateProject(
 		project,
 	)
 	if err != nil {
-		return domain.Project{}, fmt.Errorf("failed to create project: %w", err)
+		return domain.Project{}, fmt.Errorf(
+			"failed to create project: %w",
+			err,
+		)
 	}
 
 	return createdProject, nil
