@@ -7,12 +7,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *AreaService) DeleteArea(
+func (s *AreasService) DeleteArea(
 	ctx context.Context,
 	userID uuid.UUID,
 	areaID uuid.UUID,
 ) error {
-	if err := s.areaRepository.DeleteArea(ctx, userID, areaID); err != nil {
+	if err := s.areasRepository.DeleteArea(ctx, userID, areaID); err != nil {
 		return fmt.Errorf("delete area: %w", err)
 	}
 

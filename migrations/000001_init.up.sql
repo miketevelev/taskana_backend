@@ -53,6 +53,7 @@ CREATE INDEX idx_areas_user_id ON taskana.areas (user_id);
 CREATE TABLE taskana.projects
 (
     id           UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
+    version       bigint       not null default 1,
     user_id      UUID                   NOT NULL REFERENCES taskana.users (id) ON DELETE CASCADE,
     area_id      UUID                   REFERENCES taskana.areas (id) ON DELETE SET NULL,
     title        VARCHAR(255)           NOT NULL,

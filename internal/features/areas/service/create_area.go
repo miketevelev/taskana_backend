@@ -8,7 +8,7 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *AreaService) CreateArea(
+func (s *AreasService) CreateArea(
 	ctx context.Context,
 	userID uuid.UUID,
 	area domain.Area,
@@ -26,7 +26,7 @@ func (s *AreaService) CreateArea(
 			fmt.Errorf("area validation failed: %w", err)
 	}
 
-	createdArea, err := s.areaRepository.CreateArea(ctx, userID, area)
+	createdArea, err := s.areasRepository.CreateArea(ctx, userID, area)
 	if err != nil {
 		return domain.Area{}, fmt.Errorf("create area failed: %w", err)
 	}

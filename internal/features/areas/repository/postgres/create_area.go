@@ -2,10 +2,13 @@ package areas_postgres_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
+	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
 
 func (r *AreasRepository) CreateArea(
@@ -34,7 +37,7 @@ func (r *AreasRepository) CreateArea(
 		ctx,
 		query,
 		area.ID,
-		area.UserID,
+		userID,
 		area.Title,
 		area.CreatedAt,
 		area.UpdatedAt,
@@ -42,6 +45,13 @@ func (r *AreasRepository) CreateArea(
 
 	areaModel, err := scanArea(row)
 	if err != nil {
+		if errors.Is(err, core_postgres_pool.ErrViolateForeignKey) {
+			return domain.Area{}, fmt.Errorf(
+				"user not found for new area: %w",
+				core_errors.ErrNotFound,
+			)
+		}
+
 		return domain.Area{}, fmt.Errorf("scan area from db: %w", err)
 	}
 

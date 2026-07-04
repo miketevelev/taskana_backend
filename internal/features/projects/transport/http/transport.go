@@ -1,4 +1,4 @@
-package areas_transport_http
+package projects_transport_http
 
 import (
 	"context"
@@ -11,63 +11,63 @@ import (
 	core_http_server "github.com/miketevelev/taskana_backend/internal/core/transport/http/server"
 )
 
-type AreasHTTPHandler struct {
-	areasService AreasService
-	authMW       func(http.Handler) http.Handler
+type ProjectsHTTPHandler struct {
+	projectsService ProjectsService
+	authMW          func(http.Handler) http.Handler
 }
 
-type AreasService interface {
-	GetArea(
+type ProjectsService interface {
+	GetProject(
 		ctx context.Context,
 		userID uuid.UUID,
-		areaID uuid.UUID,
-	) (domain.Area, error)
+		projectID uuid.UUID,
+	) (domain.Project, error)
 
-	GetAreas(
+	GetProjects(
 		ctx context.Context,
 		userID uuid.UUID,
 		limit *int,
 		offset *int,
-	) ([]domain.Area, error)
+	) ([]domain.Project, error)
 
-	CreateArea(
+	CreateProject(
 		ctx context.Context,
 		userID uuid.UUID,
-		area domain.Area,
-	) (domain.Area, error)
+		project domain.Project,
+	) (domain.Project, error)
 
 	ChangePosition(
 		ctx context.Context,
 		userID uuid.UUID,
-		areaID uuid.UUID,
+		projectID uuid.UUID,
 		newPosition int,
-	) (domain.Area, error)
+	) (domain.Project, error)
 
-	PatchArea(
+	PatchProject(
 		ctx context.Context,
 		userID uuid.UUID,
-		areaID uuid.UUID,
-		patch domain.AreaPatch,
-	) (domain.Area, error)
+		projectID uuid.UUID,
+		patch domain.ProjectPatch,
+	) (domain.Project, error)
 
-	DeleteArea(
+	DeleteProject(
 		ctx context.Context,
 		userID uuid.UUID,
-		areaID uuid.UUID,
+		projectID uuid.UUID,
 	) error
 }
 
-func NewAreasHTTPHandler(
-	areasService AreasService,
+func NewProjectsHTTPHandler(
+	projectsService ProjectsService,
 	tokenManager *core_auth.TokenManager,
-) AreasHTTPHandler {
-	return AreasHTTPHandler{
-		areasService: areasService,
-		authMW:       core_http_middleware.Auth(tokenManager),
+) ProjectsHTTPHandler {
+	return ProjectsHTTPHandler{
+		projectsService: projectsService,
+		authMW:          core_http_middleware.Auth(tokenManager),
 	}
 }
 
-func (h *AreasHTTPHandler) Routes() []core_http_server.Route {
+func (h *ProjectsHTTPHandler) Routes() []core_http_server.Route {
 	auth := []core_http_middleware.Middleware{
 		func(next http.Handler) http.Handler { return h.authMW(next) },
 	}
@@ -75,38 +75,38 @@ func (h *AreasHTTPHandler) Routes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
 			Method:     http.MethodGet,
-			Path:       "/areas/{id}",
-			Handler:    h.GetArea,
+			Path:       "/projects/{id}",
+			Handler:    h.GetProject,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodGet,
-			Path:       "/areas",
-			Handler:    h.GetAreas,
+			Path:       "/projects",
+			Handler:    h.GetProjects,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodPost,
-			Path:       "/areas",
-			Handler:    h.CreateArea,
+			Path:       "/projects",
+			Handler:    h.CreateProject,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodPost,
-			Path:       "/areas/{id}",
+			Path:       "/projects/{id}",
 			Handler:    h.ChangePosition,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodPatch,
-			Path:       "/areas/{id}",
-			Handler:    h.PatchArea,
+			Path:       "/projects/{id}",
+			Handler:    h.PatchProject,
 			Middleware: auth,
 		},
 		{
 			Method:     http.MethodDelete,
-			Path:       "/areas/{id}",
-			Handler:    h.DeleteArea,
+			Path:       "/projects/{id}",
+			Handler:    h.DeleteProject,
 			Middleware: auth,
 		},
 	}

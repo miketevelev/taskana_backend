@@ -1,4 +1,4 @@
-package areas_service
+package projects_service
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func (s *AreasService) GetAreas(
+func (s *ProjectService) GetProjects(
 	ctx context.Context,
 	userID uuid.UUID,
 	limit *int,
 	offset *int,
-) ([]domain.Area, error) {
+) ([]domain.Project, error) {
 	if limit != nil && *limit < 0 {
 		return nil, fmt.Errorf(
 			"limit must be non-negative: %w",
@@ -28,10 +28,12 @@ func (s *AreasService) GetAreas(
 		)
 	}
 
-	areas, err := s.areasRepository.GetAreas(ctx, userID, limit, offset)
+	projects, err := s.projectsRepository.GetProjects(
+		ctx, userID, limit, offset,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("get areas from repository: %w", err)
+		return nil, fmt.Errorf("get projects from repository: %w", err)
 	}
 
-	return areas, nil
+	return projects, nil
 }

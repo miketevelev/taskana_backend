@@ -13,14 +13,13 @@ import (
 )
 
 type PatchAreaRequest struct {
-	Title    core_http_types.Nullable[string] `json:"title" example:"Home"`
-	Position core_http_types.Nullable[int]    `json:"position" example:"2"`
+	Title core_http_types.Nullable[string] `json:"title" example:"Home"`
 }
 
 func (r *PatchAreaRequest) Validate() error {
 	if r.Title.Set {
 		if r.Title.Value == nil {
-			return fmt.Errorf("'Title' can't be nil")
+			return fmt.Errorf("'Title' can't be NULL")
 		}
 		titleLength := len([]rune(*r.Title.Value))
 		if titleLength < 3 || titleLength > 100 {
@@ -28,15 +27,6 @@ func (r *PatchAreaRequest) Validate() error {
 				"'Title' length must be between 3 and 100, got %d",
 				titleLength,
 			)
-		}
-	}
-
-	if r.Position.Set {
-		if r.Position.Value == nil {
-			return fmt.Errorf("'Position' can't be nil")
-		}
-		if *r.Position.Value < 1 {
-			return fmt.Errorf("'Position' can't be negative")
 		}
 	}
 
@@ -91,6 +81,5 @@ func (h *AreasHTTPHandler) PatchArea(w http.ResponseWriter, r *http.Request) {
 func areaPatchFromRequest(request PatchAreaRequest) domain.AreaPatch {
 	return domain.NewAreaPatch(
 		request.Title.ToDomain(),
-		request.Position.ToDomain(),
 	)
 }
