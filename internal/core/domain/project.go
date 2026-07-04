@@ -184,12 +184,11 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 	if patch.Title.Set {
 		tmp.Title = *patch.Title.Value
 	}
-	if patch.Position.Set {
-		tmp.Position = *patch.Position.Value
-	}
+
 	if patch.Status.Set {
 		tmp.Status = *patch.Status.Value
 	}
+
 	if patch.AreaID.Set {
 		if patch.AreaID.Value == nil {
 			tmp.AreaID = nil
@@ -197,6 +196,7 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 			tmp.AreaID = *patch.AreaID.Value
 		}
 	}
+
 	if patch.Notes.Set {
 		if patch.Notes.Value == nil {
 			tmp.Notes = nil
@@ -204,6 +204,7 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 			tmp.Notes = *patch.Notes.Value
 		}
 	}
+
 	if patch.Deadline.Set {
 		if patch.Deadline.Value == nil {
 			tmp.Deadline = nil
@@ -211,6 +212,7 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 			tmp.Deadline = *patch.Deadline.Value
 		}
 	}
+
 	if patch.CompletedAt.Set {
 		if patch.CompletedAt.Value == nil {
 			tmp.CompletedAt = nil
@@ -222,6 +224,7 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 	if patch.Status.Set && tmp.Status == ProjectStatusCompleted && !patch.CompletedAt.Set {
 		tmp.CompletedAt = &now
 	}
+
 	if patch.Status.Set && tmp.Status != ProjectStatusCompleted && !patch.CompletedAt.Set {
 		tmp.CompletedAt = nil
 	}
@@ -240,7 +243,6 @@ type ProjectPatch struct {
 	Title       Nullable[string]
 	Notes       Nullable[*string]
 	Status      Nullable[ProjectStatus]
-	Position    Nullable[int]
 	Deadline    Nullable[*time.Time]
 	CompletedAt Nullable[*time.Time]
 }
@@ -250,7 +252,6 @@ func NewProjectPatch(
 	title Nullable[string],
 	notes Nullable[*string],
 	status Nullable[ProjectStatus],
-	position Nullable[int],
 	deadline Nullable[*time.Time],
 	completedAt Nullable[*time.Time],
 ) ProjectPatch {
@@ -259,7 +260,6 @@ func NewProjectPatch(
 		Title:       title,
 		Notes:       notes,
 		Status:      status,
-		Position:    position,
 		Deadline:    deadline,
 		CompletedAt: completedAt,
 	}
@@ -278,21 +278,6 @@ func (p *ProjectPatch) Validate() error {
 			"'Status' can't be patched to NULL: %w",
 			core_errors.ErrInvalidArgument,
 		)
-	}
-
-	if p.Position.Set {
-		if p.Position.Value == nil {
-			return fmt.Errorf(
-				"'Position' can't be patched to NULL: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
-		if *p.Position.Value < 1 {
-			return fmt.Errorf(
-				"'Position' must be 1 or greater: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
 	}
 
 	if p.Status.Set && p.Status.Value != nil {

@@ -60,7 +60,7 @@ func (a *Area) Validate() error {
 	titleLength := len([]rune(strings.TrimSpace(a.Title)))
 	if titleLength < 3 || titleLength > 100 {
 		return fmt.Errorf(
-			"title must be between 3 and 255 characters long: %w",
+			"title must be between 3 and 100 characters long: %w",
 			core_errors.ErrInvalidArgument,
 		)
 	}
@@ -93,17 +93,13 @@ func (a *Area) Validate() error {
 
 func (a *Area) ApplyPatch(patch AreaPatch) error {
 	if err := patch.Validate(); err != nil {
-		return fmt.Errorf("validate task patch: %w", err)
+		return fmt.Errorf("validate area patch: %w", err)
 	}
 
 	tmp := *a
 
 	if patch.Title.Set {
 		tmp.Title = *patch.Title.Value
-	}
-
-	if patch.Position.Set {
-		tmp.Position = *patch.Position.Value
 	}
 
 	if err := tmp.Validate(); err != nil {
@@ -116,17 +112,14 @@ func (a *Area) ApplyPatch(patch AreaPatch) error {
 }
 
 type AreaPatch struct {
-	Title    Nullable[string]
-	Position Nullable[int]
+	Title Nullable[string]
 }
 
 func NewAreaPatch(
 	title Nullable[string],
-	position Nullable[int],
 ) AreaPatch {
 	return AreaPatch{
-		Title:    title,
-		Position: position,
+		Title: title,
 	}
 }
 
@@ -136,21 +129,6 @@ func (p *AreaPatch) Validate() error {
 			"'Title' can't be patched to NULL: %w",
 			core_errors.ErrInvalidArgument,
 		)
-	}
-
-	if p.Position.Set {
-		if p.Position.Value == nil {
-			return fmt.Errorf(
-				"'Position' can't be patched to NULL: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
-		if *p.Position.Value < 1 {
-			return fmt.Errorf(
-				"'Position' must be 1 or greater: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
 	}
 
 	return nil

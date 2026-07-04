@@ -12,51 +12,11 @@ import (
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
 
-func (r *AreasRepository) PatchArea(
+func (r *AreasRepository) ChangePosition(
 	ctx context.Context,
 	userID uuid.UUID,
 	area domain.Area,
-) (domain.Area, error) {
-	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
-	defer cancel()
-
-	query := `
-		UPDATE taskana.areas
-		SET 
-			title = $1, 
-			updated_at = $2,
-			version = version + 1
-		WHERE id = $3 AND user_id = $4 AND version = $5
-		RETURNING id, version, user_id, title, position, created_at, updated_at
-	`
-
-	row := r.pool.QueryRow(
-		ctx, query,
-		area.Title,
-		time.Now().UTC(),
-		area.ID,
-		userID,
-		area.Version,
-	)
-
-	areaModel, err := scanArea(row)
-	if err != nil {
-		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Area{}, fmt.Errorf(
-				"area concurrently accessed: %w", core_errors.ErrConflict,
-			)
-		}
-		return domain.Area{}, fmt.Errorf("patch area repository: %w", err)
-	}
-
-	return areaDomainFromModel(areaModel), nil
-}
-
-func (r *AreasRepository) PatchAreaWithReordering(
-	ctx context.Context,
-	userID uuid.UUID,
-	area domain.Area,
-	oldPos int,
+	oldPosition int,
 ) (domain.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
@@ -68,9 +28,12 @@ func (r *AreasRepository) PatchAreaWithReordering(
 	defer tx.Rollback(ctx)
 
 	var count int
-	countQuery := `SELECT COUNT(*) FROM taskana.areas WHERE user_id = $1`
-	if err := tx.QueryRow(ctx, countQuery, userID).Scan(&count); err != nil {
-		return domain.Area{}, fmt.Errorf("failed to get areas count: %w", err)
+	if err := tx.QueryRow(
+		ctx, `SELECT COUNT(*) FROM taskana.areas WHERE user_id = $1`, userID,
+	).Scan(&count); err != nil {
+		return domain.Area{}, fmt.Errorf(
+			"failed to get areas count: %w", err,
+		)
 	}
 
 	newPos := area.Position
@@ -83,20 +46,20 @@ func (r *AreasRepository) PatchAreaWithReordering(
 
 	now := time.Now().UTC()
 
-	if newPos < oldPos {
+	if newPos < oldPosition {
 		shiftQuery := `
 			UPDATE taskana.areas 
 			SET position = position + 1, version = version + 1, updated_at = $1
 			WHERE user_id = $2 AND position >= $3 AND position < $4
 		`
-		_, err = tx.Exec(ctx, shiftQuery, now, userID, newPos, oldPos)
-	} else if newPos > oldPos {
+		_, err = tx.Exec(ctx, shiftQuery, now, userID, newPos, oldPosition)
+	} else if newPos > oldPosition {
 		shiftQuery := `
 			UPDATE taskana.areas 
 			SET position = position - 1, version = version + 1, updated_at = $1
 			WHERE user_id = $2 AND position > $3 AND position <= $4
 		`
-		_, err = tx.Exec(ctx, shiftQuery, now, userID, oldPos, newPos)
+		_, err = tx.Exec(ctx, shiftQuery, now, userID, oldPosition, newPos)
 	}
 
 	if err != nil {
@@ -108,18 +71,16 @@ func (r *AreasRepository) PatchAreaWithReordering(
 	updateQuery := `
 		UPDATE taskana.areas
 		SET 
-			title = $1, 
+			position = $1,
 			updated_at = $2,
-			position = $3,
 			version = version + 1
-		WHERE id = $4 AND user_id = $5 AND version = $6
+		WHERE id = $3 AND user_id = $4 AND version = $5
 		RETURNING id, version, user_id, title, position, created_at, updated_at
 	`
 	row := tx.QueryRow(
 		ctx, updateQuery,
-		area.Title,
-		now,
 		newPos,
+		now,
 		area.ID,
 		userID,
 		area.Version,
@@ -129,12 +90,10 @@ func (r *AreasRepository) PatchAreaWithReordering(
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.Area{}, fmt.Errorf(
-				"area with id='%s' concurrently accessed: %w",
-				area.ID,
-				core_errors.ErrConflict,
+				"area concurrently accessed: %w", core_errors.ErrConflict,
 			)
 		}
-		return domain.Area{}, fmt.Errorf("patch area repository: %w", err)
+		return domain.Area{}, fmt.Errorf("change position repository: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -143,7 +102,5 @@ func (r *AreasRepository) PatchAreaWithReordering(
 		)
 	}
 
-	areaDomain := areaDomainFromModel(areaModel)
-
-	return areaDomain, nil
+	return areaDomainFromModel(areaModel), nil
 }

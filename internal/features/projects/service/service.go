@@ -31,13 +31,20 @@ type ProjectsRepository interface {
 		project domain.Project,
 	) (domain.Project, error)
 
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		project domain.Project,
+		oldPosition int,
+	) (domain.Project, error)
+
 	PatchProject(
 		ctx context.Context,
 		userID uuid.UUID,
 		project domain.Project,
 	) (domain.Project, error)
 
-	PatchProjectWithReordering(
+	PatchProjectWithAreaChange(
 		ctx context.Context,
 		userID uuid.UUID,
 		project domain.Project,

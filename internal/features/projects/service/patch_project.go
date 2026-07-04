@@ -21,8 +21,8 @@ func (s *ProjectService) PatchProject(
 		)
 	}
 
-	oldPosition := project.Position
 	oldAreaID := project.AreaID
+	oldPosition := project.Position
 
 	if err := project.ApplyPatch(patch); err != nil {
 		return domain.Project{}, fmt.Errorf(
@@ -39,17 +39,11 @@ func (s *ProjectService) PatchProject(
 		}
 	}
 
-	positionChanged := patch.Position.Set && project.Position != oldPosition
-
 	var patchedProject domain.Project
 
-	if positionChanged || areaChanged {
-		patchedProject, err = s.projectsRepository.PatchProjectWithReordering(
-			ctx,
-			userID,
-			project,
-			oldPosition,
-			oldAreaID,
+	if areaChanged {
+		patchedProject, err = s.projectsRepository.PatchProjectWithAreaChange(
+			ctx, userID, project, oldPosition, oldAreaID,
 		)
 	} else {
 		patchedProject, err = s.projectsRepository.PatchProject(

@@ -20,7 +20,6 @@ type PatchProjectRequest struct {
 	Title       core_http_types.Nullable[string]               `json:"title"`
 	Notes       core_http_types.Nullable[*string]              `json:"notes"`
 	Status      core_http_types.Nullable[domain.ProjectStatus] `json:"status"`
-	Position    core_http_types.Nullable[int]                  `json:"position"`
 	Deadline    core_http_types.Nullable[*time.Time]           `json:"deadline"`
 	CompletedAt core_http_types.Nullable[*time.Time]           `json:"completed_at"`
 }
@@ -49,15 +48,6 @@ func (r *PatchProjectRequest) Validate() error {
 			// статус валиден
 		default:
 			return fmt.Errorf("invalid project status '%s'", status)
-		}
-	}
-
-	if r.Position.Set {
-		if r.Position.Value == nil {
-			return fmt.Errorf("'Position' can't be NULL")
-		}
-		if *r.Position.Value < 1 {
-			return fmt.Errorf("'Position' must be 1 or greater")
 		}
 	}
 
@@ -148,7 +138,6 @@ func projectPatchFromRequest(request PatchProjectRequest) domain.ProjectPatch {
 		request.Title.ToDomain(),
 		request.Notes.ToDomain(),
 		request.Status.ToDomain(),
-		request.Position.ToDomain(),
 		request.Deadline.ToDomain(),
 		request.CompletedAt.ToDomain(),
 	)

@@ -31,6 +31,13 @@ type AreasRepository interface {
 		area domain.Area,
 	) (domain.Area, error)
 
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		area domain.Area,
+		oldPosition int,
+	) (domain.Area, error)
+
 	PatchArea(
 		ctx context.Context,
 		userID uuid.UUID,

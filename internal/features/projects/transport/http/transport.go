@@ -36,6 +36,13 @@ type ProjectsService interface {
 		project domain.Project,
 	) (domain.Project, error)
 
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		projectID uuid.UUID,
+		newPosition int,
+	) (domain.Project, error)
+
 	PatchProject(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -82,6 +89,12 @@ func (h *ProjectsHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/projects",
 			Handler:    h.CreateProject,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/projects/{id}",
+			Handler:    h.ChangePosition,
 			Middleware: auth,
 		},
 		{
