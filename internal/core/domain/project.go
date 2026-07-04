@@ -78,7 +78,7 @@ func NewProjectUninitialized(
 		Title:       title,
 		Notes:       notes,
 		Status:      ProjectStatusActive,
-		Position:    0,
+		Position:    1,
 		Deadline:    deadline,
 		CompletedAt: nil,
 		CreatedAt:   now,
@@ -95,7 +95,7 @@ func (p *Project) Validate() error {
 		)
 	}
 
-	if p.Position < 1 && p.Position != 0 {
+	if p.Position < 1 {
 		return fmt.Errorf(
 			"position must be 1 or greater: %w",
 			core_errors.ErrInvalidArgument,

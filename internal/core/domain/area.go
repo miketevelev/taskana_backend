@@ -50,7 +50,7 @@ func NewAreaUninitialized(
 		Version:   UninitializedVersion,
 		UserID:    userID,
 		Title:     title,
-		Position:  0,
+		Position:  1,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -65,7 +65,7 @@ func (a *Area) Validate() error {
 		)
 	}
 
-	if a.Position < 1 && a.Position != 0 {
+	if a.Position < 1 {
 		return fmt.Errorf(
 			"position must be 1 or greater: %w",
 			core_errors.ErrInvalidArgument,
