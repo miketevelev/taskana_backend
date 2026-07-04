@@ -113,6 +113,7 @@ func NewUserUninitialized(
 	password string,
 	timezone string,
 ) User {
+	now := time.Now().UTC()
 	return NewUser(
 		UninitializedID,
 		UninitializedVersion,
@@ -121,8 +122,8 @@ func NewUserUninitialized(
 		email,
 		password,
 		timezone,
-		time.Now().UTC(),
-		time.Now().UTC(),
+		now,
+		now,
 	)
 }
 
