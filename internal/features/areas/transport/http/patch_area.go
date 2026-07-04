@@ -20,7 +20,7 @@ type PatchAreaRequest struct {
 func (r *PatchAreaRequest) Validate() error {
 	if r.Title.Set {
 		if r.Title.Value == nil {
-			return fmt.Errorf("'Title' can't be nil")
+			return fmt.Errorf("'Title' can't be NULL")
 		}
 		titleLength := len([]rune(*r.Title.Value))
 		if titleLength < 3 || titleLength > 100 {
@@ -33,7 +33,7 @@ func (r *PatchAreaRequest) Validate() error {
 
 	if r.Position.Set {
 		if r.Position.Value == nil {
-			return fmt.Errorf("'Position' can't be nil")
+			return fmt.Errorf("'Position' can't be NULL")
 		}
 		if *r.Position.Value < 1 {
 			return fmt.Errorf("'Position' can't be negative")

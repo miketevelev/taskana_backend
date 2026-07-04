@@ -16,7 +16,9 @@ func (s *AreasService) PatchArea(
 ) (domain.Area, error) {
 	area, err := s.areasRepository.GetArea(ctx, userID, areaID)
 	if err != nil {
-		return domain.Area{}, fmt.Errorf("error while fetching area: %w", err)
+		return domain.Area{}, fmt.Errorf(
+			"error while fetching area: %w", err,
+		)
 	}
 
 	oldPosition := area.Position

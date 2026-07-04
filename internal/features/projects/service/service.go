@@ -31,6 +31,20 @@ type ProjectsRepository interface {
 		project domain.Project,
 	) (domain.Project, error)
 
+	PatchProject(
+		ctx context.Context,
+		userID uuid.UUID,
+		project domain.Project,
+	) (domain.Project, error)
+
+	PatchProjectWithReordering(
+		ctx context.Context,
+		userID uuid.UUID,
+		project domain.Project,
+		oldPosition int,
+		oldAreaID *uuid.UUID,
+	) (domain.Project, error)
+
 	DeleteProject(
 		ctx context.Context,
 		userID uuid.UUID,

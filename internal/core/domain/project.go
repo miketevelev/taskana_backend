@@ -191,16 +191,32 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 		tmp.Status = *patch.Status.Value
 	}
 	if patch.AreaID.Set {
-		tmp.AreaID = *patch.AreaID.Value
+		if patch.AreaID.Value == nil {
+			tmp.AreaID = nil
+		} else {
+			tmp.AreaID = *patch.AreaID.Value
+		}
 	}
 	if patch.Notes.Set {
-		tmp.Notes = *patch.Notes.Value
+		if patch.Notes.Value == nil {
+			tmp.Notes = nil
+		} else {
+			tmp.Notes = *patch.Notes.Value
+		}
 	}
 	if patch.Deadline.Set {
-		tmp.Deadline = *patch.Deadline.Value
+		if patch.Deadline.Value == nil {
+			tmp.Deadline = nil
+		} else {
+			tmp.Deadline = *patch.Deadline.Value
+		}
 	}
 	if patch.CompletedAt.Set {
-		tmp.CompletedAt = *patch.CompletedAt.Value
+		if patch.CompletedAt.Value == nil {
+			tmp.CompletedAt = nil
+		} else {
+			tmp.CompletedAt = *patch.CompletedAt.Value
+		}
 	}
 
 	if patch.Status.Set && tmp.Status == ProjectStatusCompleted && !patch.CompletedAt.Set {

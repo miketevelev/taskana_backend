@@ -36,6 +36,13 @@ type ProjectsService interface {
 		project domain.Project,
 	) (domain.Project, error)
 
+	PatchProject(
+		ctx context.Context,
+		userID uuid.UUID,
+		projectID uuid.UUID,
+		patch domain.ProjectPatch,
+	) (domain.Project, error)
+
 	DeleteProject(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -75,6 +82,12 @@ func (h *ProjectsHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/projects",
 			Handler:    h.CreateProject,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPatch,
+			Path:       "/projects/{id}",
+			Handler:    h.PatchProject,
 			Middleware: auth,
 		},
 		{
