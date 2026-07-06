@@ -37,6 +37,12 @@ type HeadingRepository interface {
 		heading domain.Heading,
 		oldPosition int,
 	) (domain.Heading, error)
+
+	PatchHeading(
+		ctx context.Context,
+		userID uuid.UUID,
+		heading domain.Heading,
+	) (domain.Heading, error)
 }
 
 func NewHeadingService(
