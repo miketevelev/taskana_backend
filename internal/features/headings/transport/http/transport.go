@@ -17,6 +17,12 @@ type HeadingHTTPHandler struct {
 }
 
 type HeadingService interface {
+	GetHeading(
+		ctx context.Context,
+		userID uuid.UUID,
+		headingID uuid.UUID,
+	) (domain.Heading, error)
+
 	CreateHeading(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -40,6 +46,12 @@ func (h *HeadingHTTPHandler) Routes() []core_http_server.Route {
 	}
 
 	return []core_http_server.Route{
+		{
+			Method:     http.MethodGet,
+			Path:       "/headings/{id}",
+			Handler:    h.GetHeading,
+			Middleware: auth,
+		},
 		{
 			Method:     http.MethodPost,
 			Path:       "/headings",

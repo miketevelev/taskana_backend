@@ -12,6 +12,12 @@ type HeadingService struct {
 }
 
 type HeadingRepository interface {
+	GetHeading(
+		ctx context.Context,
+		userID uuid.UUID,
+		headingID uuid.UUID,
+	) (domain.Heading, error)
+
 	CreateHeading(
 		ctx context.Context,
 		userID uuid.UUID,
