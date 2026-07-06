@@ -10,11 +10,11 @@ import (
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 )
 
-type ChangePositionRequest struct {
+type ChangePositionAreaRequest struct {
 	Position int `json:"position" example:"2"`
 }
 
-func (r *ChangePositionRequest) Validate() error {
+func (r *ChangePositionAreaRequest) Validate() error {
 	if r.Position < 1 {
 		return fmt.Errorf("'Position' must be 1 or greater")
 	}
@@ -37,7 +37,7 @@ func (h *AreasHTTPHandler) ChangePosition(
 		return
 	}
 
-	var request ChangePositionRequest
+	var request ChangePositionAreaRequest
 	if err := core_http_request.DecodeAndValidateRequest(
 		r, &request,
 	); err != nil {

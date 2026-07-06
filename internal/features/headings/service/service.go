@@ -30,6 +30,13 @@ type HeadingRepository interface {
 		userID uuid.UUID,
 		heading domain.Heading,
 	) (domain.Heading, error)
+
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		heading domain.Heading,
+		oldPosition int,
+	) (domain.Heading, error)
 }
 
 func NewHeadingService(

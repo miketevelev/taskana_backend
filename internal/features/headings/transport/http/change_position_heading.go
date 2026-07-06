@@ -1,4 +1,4 @@
-package projects_transport_http
+package headings_transport_http
 
 import (
 	"fmt"
@@ -10,18 +10,18 @@ import (
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 )
 
-type ChangePositionProjectRequest struct {
+type ChangePositionHeadingRequest struct {
 	Position int `json:"position" example:"2"`
 }
 
-func (r *ChangePositionProjectRequest) Validate() error {
+func (r *ChangePositionHeadingRequest) Validate() error {
 	if r.Position < 1 {
 		return fmt.Errorf("'Position' must be 1 or greater")
 	}
 	return nil
 }
 
-func (h *ProjectsHTTPHandler) ChangePosition(
+func (h *HeadingHTTPHandler) ChangePosition(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -31,13 +31,13 @@ func (h *ProjectsHTTPHandler) ChangePosition(
 
 	userID := core_auth.MustUserIDFromContext(ctx)
 
-	projectID, err := core_http_request.GetUUIDPathValue(r, "id")
+	headingID, err := core_http_request.GetUUIDPathValue(r, "id")
 	if err != nil {
-		responseHandler.ErrorResponse(err, "failed to decode project request")
+		responseHandler.ErrorResponse(err, "failed to decode heading request")
 		return
 	}
 
-	var request ChangePositionProjectRequest
+	var request ChangePositionHeadingRequest
 	if err := core_http_request.DecodeAndValidateRequest(
 		r, &request,
 	); err != nil {
@@ -47,18 +47,18 @@ func (h *ProjectsHTTPHandler) ChangePosition(
 		return
 	}
 
-	project, err := h.projectsService.ChangePosition(
-		ctx, userID, projectID, request.Position,
+	heading, err := h.headingService.ChangePosition(
+		ctx, userID, headingID, request.Position,
 	)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to change project position",
+			"failed to change heading position",
 		)
 		return
 	}
 
-	response := projectDTOFromDomain(project)
+	response := headingDTOFromDomain(heading)
 
 	responseHandler.JSONResponse(response, http.StatusOK)
 }

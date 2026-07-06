@@ -35,6 +35,13 @@ type HeadingService interface {
 		userID uuid.UUID,
 		heading domain.Heading,
 	) (domain.Heading, error)
+
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		headingID uuid.UUID,
+		newPosition int,
+	) (domain.Heading, error)
 }
 
 func NewHeadingHTTPHandler(
@@ -69,6 +76,12 @@ func (h *HeadingHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/headings",
 			Handler:    h.CreateHeading,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/headings/{id}",
+			Handler:    h.ChangePosition,
 			Middleware: auth,
 		},
 	}
