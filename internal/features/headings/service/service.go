@@ -18,6 +18,13 @@ type HeadingRepository interface {
 		headingID uuid.UUID,
 	) (domain.Heading, error)
 
+	GetHeadings(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Heading, error)
+
 	CreateHeading(
 		ctx context.Context,
 		userID uuid.UUID,
