@@ -28,20 +28,21 @@ type TaskTemplateModel struct {
 
 func taskTemplateDomainFromModel(taskTemplateModel TaskTemplateModel) domain.TaskTemplate {
 	return domain.TaskTemplate{
-		ID:                taskTemplateModel.ID,
-		Version:           taskTemplateModel.Version,
-		UserID:            taskTemplateModel.UserID,
-		ProjectID:         taskTemplateModel.ProjectID,
-		HeadingID:         taskTemplateModel.HeadingID,
-		Title:             taskTemplateModel.Title,
-		Notes:             taskTemplateModel.Notes,
-		RecurrenceRule:    taskTemplateModel.RecurrenceRule,
-		RecurrenceType:    taskTemplateModel.RecurrenceType,
-		TargetBucket:      taskTemplateModel.TargetBucket,
-		NextExecutionDate: taskTemplateModel.NextExecutionDate,
-		IsTimeTracked:     taskTemplateModel.IsTimeTracked,
-		CreatedAt:         taskTemplateModel.CreatedAt,
-		UpdatedAt:         taskTemplateModel.UpdatedAt,
+		ID:                 taskTemplateModel.ID,
+		Version:            taskTemplateModel.Version,
+		UserID:             taskTemplateModel.UserID,
+		ProjectID:          taskTemplateModel.ProjectID,
+		HeadingID:          taskTemplateModel.HeadingID,
+		Title:              taskTemplateModel.Title,
+		Notes:              taskTemplateModel.Notes,
+		RecurrenceRule:     taskTemplateModel.RecurrenceRule,
+		RecurrenceType:     taskTemplateModel.RecurrenceType,
+		TargetBucket:       taskTemplateModel.TargetBucket,
+		NextExecutionDate:  taskTemplateModel.NextExecutionDate,
+		IsTimeTracked:      taskTemplateModel.IsTimeTracked,
+		EstimatedPomodoros: taskTemplateModel.EstimatedPomodoros,
+		CreatedAt:          taskTemplateModel.CreatedAt,
+		UpdatedAt:          taskTemplateModel.UpdatedAt,
 	}
 }
 
@@ -53,20 +54,21 @@ func taskTemplateDomainsFromModels(taskTemplates []TaskTemplateModel) []domain.T
 
 	for i, taskTemplate := range taskTemplates {
 		taskTemplateDomains[i] = domain.TaskTemplate{
-			ID:                taskTemplate.ID,
-			Version:           taskTemplate.Version,
-			UserID:            taskTemplate.UserID,
-			ProjectID:         taskTemplate.ProjectID,
-			HeadingID:         taskTemplate.HeadingID,
-			Title:             taskTemplate.Title,
-			Notes:             taskTemplate.Notes,
-			RecurrenceRule:    taskTemplate.RecurrenceRule,
-			RecurrenceType:    taskTemplate.RecurrenceType,
-			TargetBucket:      taskTemplate.TargetBucket,
-			NextExecutionDate: taskTemplate.NextExecutionDate,
-			IsTimeTracked:     taskTemplate.IsTimeTracked,
-			CreatedAt:         taskTemplate.CreatedAt,
-			UpdatedAt:         taskTemplate.UpdatedAt,
+			ID:                 taskTemplate.ID,
+			Version:            taskTemplate.Version,
+			UserID:             taskTemplate.UserID,
+			ProjectID:          taskTemplate.ProjectID,
+			HeadingID:          taskTemplate.HeadingID,
+			Title:              taskTemplate.Title,
+			Notes:              taskTemplate.Notes,
+			RecurrenceRule:     taskTemplate.RecurrenceRule,
+			RecurrenceType:     taskTemplate.RecurrenceType,
+			TargetBucket:       taskTemplate.TargetBucket,
+			NextExecutionDate:  taskTemplate.NextExecutionDate,
+			IsTimeTracked:      taskTemplate.IsTimeTracked,
+			EstimatedPomodoros: taskTemplate.EstimatedPomodoros,
+			CreatedAt:          taskTemplate.CreatedAt,
+			UpdatedAt:          taskTemplate.UpdatedAt,
 		}
 	}
 
@@ -91,6 +93,7 @@ func scanTaskTemplate(row interface{ Scan(dest ...any) error }) (
 		&taskTemplateModel.TargetBucket,
 		&taskTemplateModel.NextExecutionDate,
 		&taskTemplateModel.IsTimeTracked,
+		&taskTemplateModel.EstimatedPomodoros,
 		&taskTemplateModel.CreatedAt,
 		&taskTemplateModel.UpdatedAt,
 	)

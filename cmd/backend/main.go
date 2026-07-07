@@ -26,6 +26,9 @@ import (
 	projects_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/projects/repository/postgres"
 	projects_service "github.com/miketevelev/taskana_backend/internal/features/projects/service"
 	projects_transport_http "github.com/miketevelev/taskana_backend/internal/features/projects/transport/http"
+	task_templates_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/task_templates/reporitory/postgres"
+	task_templates_service "github.com/miketevelev/taskana_backend/internal/features/task_templates/service"
+	task_templates_transport_http "github.com/miketevelev/taskana_backend/internal/features/task_templates/transport/http"
 	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/user/repository/postgres"
 	user_service "github.com/miketevelev/taskana_backend/internal/features/user/service"
 	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/user/transport/http"
@@ -91,13 +94,18 @@ func main() {
 	)
 
 	// Init Heading layers (Repository -> Service -> Handler)
-	headingRepository := heading_postgres_repository.NewHeadingRepository(pool)
-	headingService := headings_service.NewHeadingService(headingRepository)
-	headingTransportHTTP := headings_transport_http.NewHeadingHTTPHandler(
-		headingService, tokenManager,
+	headingsRepository := heading_postgres_repository.NewHeadingRepository(pool)
+	headingsService := headings_service.NewHeadingService(headingsRepository)
+	headingsTransportHTTP := headings_transport_http.NewHeadingHTTPHandler(
+		headingsService, tokenManager,
 	)
 
-	// Init
+	// Init Task Templates layers (Repository -> Service -> Handler)
+	taskTemplatesRepository := task_templates_postgres_repository.NewTaskTemplateRepository(pool)
+	taskTemplatesService := task_templates_service.NewTaskTemplatesService(taskTemplatesRepository)
+	taskTemplatesTransportHTTP := task_templates_transport_http.NewTaskTemplatesHTTPHandler(
+		taskTemplatesService, tokenManager,
+	)
 
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
@@ -118,7 +126,8 @@ func main() {
 	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(areasTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(projectsTransportHTTP.Routes()...)
-	apiVersionRouter.RegisterRoutes(headingTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(headingsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(taskTemplatesTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 
