@@ -17,6 +17,19 @@ type TaskTemplatesHTTPHandler struct {
 }
 
 type TaskTemplatesService interface {
+	GetTaskTemplate(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskTemplateID uuid.UUID,
+	) (domain.TaskTemplate, error)
+
+	GetTaskTemplates(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.TaskTemplate, error)
+
 	CreateTaskTemplate(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -40,6 +53,18 @@ func (h *TaskTemplatesHTTPHandler) Routes() []core_http_server.Route {
 	}
 
 	return []core_http_server.Route{
+		{
+			Method:     http.MethodGet,
+			Path:       "/task_templates/{id}",
+			Handler:    h.GetTaskTemplate,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodGet,
+			Path:       "/task_templates",
+			Handler:    h.GetTaskTemplates,
+			Middleware: auth,
+		},
 		{
 			Method:     http.MethodPost,
 			Path:       "/task_templates",

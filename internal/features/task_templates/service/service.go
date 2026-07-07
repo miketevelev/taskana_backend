@@ -14,6 +14,19 @@ type TaskTemplatesService struct {
 }
 
 type TaskTemplateRepository interface {
+	GetTaskTemplate(
+		ctx context.Context,
+		userId uuid.UUID,
+		taskTemplateId uuid.UUID,
+	) (domain.TaskTemplate, error)
+
+	GetTaskTemplates(
+		ctx context.Context,
+		userId uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.TaskTemplate, error)
+
 	CreateTaskTemplate(
 		ctx context.Context,
 		userID uuid.UUID,
