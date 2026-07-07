@@ -43,6 +43,12 @@ type HeadingRepository interface {
 		userID uuid.UUID,
 		heading domain.Heading,
 	) (domain.Heading, error)
+
+	DeleteHeading(
+		ctx context.Context,
+		userID uuid.UUID,
+		headingID uuid.UUID,
+	) error
 }
 
 func NewHeadingService(

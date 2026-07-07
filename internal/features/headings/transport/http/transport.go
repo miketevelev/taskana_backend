@@ -49,6 +49,12 @@ type HeadingService interface {
 		headingID uuid.UUID,
 		patch domain.HeadingPatch,
 	) (domain.Heading, error)
+
+	DeleteHeading(
+		ctx context.Context,
+		userID uuid.UUID,
+		headingID uuid.UUID,
+	) error
 }
 
 func NewHeadingHTTPHandler(
@@ -95,6 +101,12 @@ func (h *HeadingHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPatch,
 			Path:       "/headings/{id}",
 			Handler:    h.PatchHeading,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/headings/{id}",
+			Handler:    h.DeleteHeading,
 			Middleware: auth,
 		},
 	}
