@@ -18,18 +18,6 @@ type AreaModel struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func areaFromModel(areaModel AreaModel) domain.Area {
-	return domain.Area{
-		ID:        areaModel.ID,
-		Version:   areaModel.Version,
-		UserID:    areaModel.UserID,
-		Title:     areaModel.Title,
-		Position:  areaModel.Position,
-		CreatedAt: areaModel.CreatedAt,
-		UpdatedAt: areaModel.UpdatedAt,
-	}
-}
-
 func areaDomainFromModel(areaModel AreaModel) domain.Area {
 	return domain.NewArea(
 		areaModel.ID,

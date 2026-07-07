@@ -97,6 +97,8 @@ func main() {
 		headingService, tokenManager,
 	)
 
+	// Init
+
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
 

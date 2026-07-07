@@ -85,6 +85,8 @@ func NewTaskTemplateUninitialized(
 	title string,
 	notes *string,
 	recurrenceRule string,
+	recurrenceType RecurrenceType,
+	targetBucket TargetBucket,
 	nextExecutionDate time.Time,
 	isTimeTracked bool,
 	estimatedPomodoros int,
@@ -99,8 +101,8 @@ func NewTaskTemplateUninitialized(
 		title,
 		notes,
 		recurrenceRule,
-		RecurrenceTypeFixed,
-		TargetBucketInbox,
+		recurrenceType,
+		targetBucket,
 		nextExecutionDate,
 		isTimeTracked,
 		estimatedPomodoros,
@@ -121,6 +123,20 @@ func (t *TaskTemplate) Validate() error {
 	if t.UserID == uuid.Nil {
 		return fmt.Errorf(
 			"user_id cannot be empty: %w", core_errors.ErrInvalidArgument,
+		)
+	}
+
+	if t.ProjectID != nil && *t.ProjectID == uuid.Nil {
+		return fmt.Errorf(
+			"project_id cannot be an empty UUID: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	if t.HeadingID != nil && *t.HeadingID == uuid.Nil {
+		return fmt.Errorf(
+			"heading_id cannot be an empty UUID: %w",
+			core_errors.ErrInvalidArgument,
 		)
 	}
 
@@ -156,6 +172,13 @@ func (t *TaskTemplate) Validate() error {
 		)
 	}
 
+	if t.NextExecutionDate.IsZero() {
+		return fmt.Errorf(
+			"next_execution_date cannot be zero: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
 	if t.CreatedAt.IsZero() || t.UpdatedAt.IsZero() {
 		return fmt.Errorf(
 			"timestamps cannot be zero: %w", core_errors.ErrInvalidArgument,
@@ -181,6 +204,10 @@ func (t *TaskTemplate) Validate() error {
 			"notes cannot exceed 2000 characters: %w",
 			core_errors.ErrInvalidArgument,
 		)
+	}
+
+	if t.Version < 0 {
+		t.Version = 0
 	}
 
 	return nil
