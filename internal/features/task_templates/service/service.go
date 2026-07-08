@@ -32,6 +32,12 @@ type TaskTemplateRepository interface {
 		userID uuid.UUID,
 		taskTemplate domain.TaskTemplate,
 	) (domain.TaskTemplate, error)
+
+	PatchTaskTemplate(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskTemplate domain.TaskTemplate,
+	) (domain.TaskTemplate, error)
 }
 
 func NewTaskTemplatesService(

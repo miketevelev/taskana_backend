@@ -35,6 +35,13 @@ type TaskTemplatesService interface {
 		userID uuid.UUID,
 		taskTemplate domain.TaskTemplate,
 	) (domain.TaskTemplate, error)
+
+	PatchTaskTemplate(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskTemplateID uuid.UUID,
+		patch domain.TaskTemplatePatch,
+	) (domain.TaskTemplate, error)
 }
 
 func NewTaskTemplatesHTTPHandler(
@@ -69,6 +76,12 @@ func (h *TaskTemplatesHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/task_templates",
 			Handler:    h.CreateTaskTemplate,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPatch,
+			Path:       "/task_templates/{id}",
+			Handler:    h.PatchTaskTemplate,
 			Middleware: auth,
 		},
 	}
