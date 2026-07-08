@@ -36,9 +36,10 @@ type UserService interface {
 		userAgent *string,
 	) (domain.TokenPair, domain.User, error)
 
-	//DeleteUser(
-	//	ctx context.Context,
-	//) error
+	DeleteUser(
+		ctx context.Context,
+		userID uuid.UUID,
+	) error
 }
 
 func NewUsersHTTPHandler(
