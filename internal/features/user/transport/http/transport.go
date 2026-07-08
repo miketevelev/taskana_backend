@@ -76,5 +76,11 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Handler:    h.PatchUser,
 			Middleware: auth,
 		},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/user",
+			Handler:    h.DeleteUser,
+			Middleware: auth,
+		},
 	}
 }
