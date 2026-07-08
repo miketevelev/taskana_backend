@@ -13,7 +13,6 @@ func (r *ProjectRepository) DeleteProject(
 	userID uuid.UUID,
 	projectID uuid.UUID,
 ) error {
-	// todo: area must deleted all tasks inside
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 

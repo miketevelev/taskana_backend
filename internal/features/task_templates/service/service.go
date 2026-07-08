@@ -38,6 +38,12 @@ type TaskTemplateRepository interface {
 		userID uuid.UUID,
 		taskTemplate domain.TaskTemplate,
 	) (domain.TaskTemplate, error)
+
+	DeleteTaskTemplate(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskTemplateId uuid.UUID,
+	) error
 }
 
 func NewTaskTemplatesService(
