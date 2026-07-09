@@ -37,7 +37,8 @@ func (r *TaskRepository) CreateTask(
 		RETURNING 
 			id, version, user_id, project_id, heading_id, template_id, 
 			title, notes, status, bucket, start_date, deadline, position, 
-			is_time_tracked, estimated_pomodoros, completed_at, created_at, updated_at
+			is_time_tracked, estimated_pomodoros, completed_at, created_at, 
+		    updated_at
 	`
 
 	row := r.pool.QueryRow(

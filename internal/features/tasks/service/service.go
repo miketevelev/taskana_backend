@@ -12,6 +12,12 @@ type TaskService struct {
 }
 
 type TaskRepository interface {
+	GetTask(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskID uuid.UUID,
+	) (domain.Task, error)
+
 	CreateTask(
 		ctx context.Context,
 		userID uuid.UUID,
