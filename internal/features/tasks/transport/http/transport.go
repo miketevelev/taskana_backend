@@ -50,11 +50,11 @@ type TasksService interface {
 		patch domain.TaskPatch,
 	) (domain.Task, error)
 
-	//DeleteTask(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	taskID uuid.UUID,
-	//) error
+	DeleteTask(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskID uuid.UUID,
+	) error
 }
 
 func NewTasksHTTPHandler(
@@ -101,6 +101,12 @@ func (h *TasksHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPatch,
 			Path:       "/tasks/{id}",
 			Handler:    h.PatchTask,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/tasks/{id}",
+			Handler:    h.DeleteTask,
 			Middleware: auth,
 		},
 	}

@@ -52,11 +52,11 @@ type TaskRepository interface {
 		oldProjectID *uuid.UUID,
 	) (domain.Task, error)
 
-	//DeleteTask(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	taskID uuid.UUID,
-	//) error
+	DeleteTask(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskID uuid.UUID,
+	) error
 }
 
 func NewTaskService(
