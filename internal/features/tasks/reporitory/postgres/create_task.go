@@ -23,7 +23,8 @@ func (r *TaskRepository) CreateTask(
 		INSERT INTO taskana.tasks (
 			id, version, user_id, project_id, heading_id, template_id, 
 			title, notes, status, bucket, start_date, deadline, position, 
-			is_time_tracked, estimated_pomodoros, completed_at, created_at, updated_at
+			is_time_tracked, estimated_pomodoros, completed_at, created_at, 
+		    updated_at
 		) 
 		VALUES (
 			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,

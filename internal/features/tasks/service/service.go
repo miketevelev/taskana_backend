@@ -18,6 +18,13 @@ type TaskRepository interface {
 		taskID uuid.UUID,
 	) (domain.Task, error)
 
+	GetTasks(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Task, error)
+
 	CreateTask(
 		ctx context.Context,
 		userID uuid.UUID,

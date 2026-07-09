@@ -23,6 +23,13 @@ type TasksService interface {
 		taskID uuid.UUID,
 	) (domain.Task, error)
 
+	GetTasks(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Task, error)
+
 	CreateTask(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -50,6 +57,12 @@ func (h *TasksHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodGet,
 			Path:       "/tasks/{id}",
 			Handler:    h.GetTask,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodGet,
+			Path:       "/tasks",
+			Handler:    h.GetTasks,
 			Middleware: auth,
 		},
 		{
