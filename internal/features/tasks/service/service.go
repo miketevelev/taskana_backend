@@ -38,20 +38,20 @@ type TaskRepository interface {
 		oldPosition int,
 	) (domain.Task, error)
 
-	//PatchTask(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	task domain.Task,
-	//) (domain.Task, error)
-	//
-	//PatchTaskWithProjectChange(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	task domain.Task,
-	//	oldPosition int,
-	//	oldProjectID uuid.UUID,
-	//) (domain.Task, error)
-	//
+	PatchTask(
+		ctx context.Context,
+		userID uuid.UUID,
+		task domain.Task,
+	) (domain.Task, error)
+
+	PatchTaskWithProjectChange(
+		ctx context.Context,
+		userID uuid.UUID,
+		task domain.Task,
+		oldPosition int,
+		oldProjectID *uuid.UUID,
+	) (domain.Task, error)
+
 	//DeleteTask(
 	//	ctx context.Context,
 	//	userID uuid.UUID,

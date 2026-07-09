@@ -43,13 +43,13 @@ type TasksService interface {
 		newPosition int,
 	) (domain.Task, error)
 
-	//PatchTask(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	taskID uuid.UUID,
-	//	patch domain.TaskPatch,
-	//) (domain.Task, error)
-	//
+	PatchTask(
+		ctx context.Context,
+		userID uuid.UUID,
+		taskID uuid.UUID,
+		patch domain.TaskPatch,
+	) (domain.Task, error)
+
 	//DeleteTask(
 	//	ctx context.Context,
 	//	userID uuid.UUID,
@@ -95,6 +95,12 @@ func (h *TasksHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/tasks/{id}",
 			Handler:    h.ChangePositionTask,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPatch,
+			Path:       "/tasks/{id}",
+			Handler:    h.PatchTask,
 			Middleware: auth,
 		},
 	}
