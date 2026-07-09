@@ -20,9 +20,18 @@ import (
 	auth_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/auth/repository/postgres"
 	auth_service "github.com/miketevelev/taskana_backend/internal/features/auth/service"
 	auth_transport_http "github.com/miketevelev/taskana_backend/internal/features/auth/transport/http"
+	heading_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/headings/reporitory/postgres"
+	headings_service "github.com/miketevelev/taskana_backend/internal/features/headings/service"
+	headings_transport_http "github.com/miketevelev/taskana_backend/internal/features/headings/transport/http"
 	projects_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/projects/repository/postgres"
 	projects_service "github.com/miketevelev/taskana_backend/internal/features/projects/service"
 	projects_transport_http "github.com/miketevelev/taskana_backend/internal/features/projects/transport/http"
+	task_templates_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/task_templates/reporitory/postgres"
+	task_templates_service "github.com/miketevelev/taskana_backend/internal/features/task_templates/service"
+	task_templates_transport_http "github.com/miketevelev/taskana_backend/internal/features/task_templates/transport/http"
+	tasks_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/tasks/reporitory/postgres"
+	tasks_service "github.com/miketevelev/taskana_backend/internal/features/tasks/service"
+	tasks_transport_http "github.com/miketevelev/taskana_backend/internal/features/tasks/transport/http"
 	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/user/repository/postgres"
 	user_service "github.com/miketevelev/taskana_backend/internal/features/user/service"
 	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/user/transport/http"
@@ -87,6 +96,27 @@ func main() {
 		projectsService, tokenManager,
 	)
 
+	// Init Heading layers (Repository -> Service -> Handler)
+	headingsRepository := heading_postgres_repository.NewHeadingRepository(pool)
+	headingsService := headings_service.NewHeadingService(headingsRepository)
+	headingsTransportHTTP := headings_transport_http.NewHeadingHTTPHandler(
+		headingsService, tokenManager,
+	)
+
+	// Init Task Templates layers (Repository -> Service -> Handler)
+	taskTemplatesRepository := task_templates_postgres_repository.NewTaskTemplateRepository(pool)
+	taskTemplatesService := task_templates_service.NewTaskTemplatesService(taskTemplatesRepository)
+	taskTemplatesTransportHTTP := task_templates_transport_http.NewTaskTemplatesHTTPHandler(
+		taskTemplatesService, tokenManager,
+	)
+
+	// Init Task layers (Repository -> Service -> Handler)
+	tasksRepository := tasks_postgres_repository.NewTaskRepository(pool)
+	tasksService := tasks_service.NewTaskService(tasksRepository)
+	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(
+		tasksService, tokenManager,
+	)
+
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
 
@@ -106,6 +136,9 @@ func main() {
 	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(areasTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(projectsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(headingsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(taskTemplatesTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 

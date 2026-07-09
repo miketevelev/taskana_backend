@@ -10,11 +10,11 @@ import (
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 )
 
-type ChangePositionRequest struct {
+type ChangePositionProjectRequest struct {
 	Position int `json:"position" example:"2"`
 }
 
-func (r *ChangePositionRequest) Validate() error {
+func (r *ChangePositionProjectRequest) Validate() error {
 	if r.Position < 1 {
 		return fmt.Errorf("'Position' must be 1 or greater")
 	}
@@ -33,11 +33,11 @@ func (h *ProjectsHTTPHandler) ChangePosition(
 
 	projectID, err := core_http_request.GetUUIDPathValue(r, "id")
 	if err != nil {
-		responseHandler.ErrorResponse(err, "failed to decode area request")
+		responseHandler.ErrorResponse(err, "failed to decode project request")
 		return
 	}
 
-	var request ChangePositionRequest
+	var request ChangePositionProjectRequest
 	if err := core_http_request.DecodeAndValidateRequest(
 		r, &request,
 	); err != nil {

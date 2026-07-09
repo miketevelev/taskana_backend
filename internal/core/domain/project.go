@@ -70,20 +70,20 @@ func NewProjectUninitialized(
 	deadline *time.Time,
 ) Project {
 	now := time.Now().UTC()
-	return Project{
-		ID:          UninitializedID,
-		Version:     UninitializedVersion,
-		UserID:      userID,
-		AreaID:      areaID,
-		Title:       title,
-		Notes:       notes,
-		Status:      ProjectStatusActive,
-		Position:    1,
-		Deadline:    deadline,
-		CompletedAt: nil,
-		CreatedAt:   now,
-		UpdatedAt:   now,
-	}
+	return NewProject(
+		UninitializedID,
+		UninitializedVersion,
+		userID,
+		areaID,
+		title,
+		notes,
+		ProjectStatusActive,
+		1,
+		deadline,
+		nil,
+		now,
+		now,
+	)
 }
 
 func (p *Project) Validate() error {

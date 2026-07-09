@@ -37,6 +37,11 @@ type UserRepository interface {
 		user domain.User,
 	) (domain.User, error)
 
+	DeleteUser(
+		ctx context.Context,
+		userID uuid.UUID,
+	) error
+
 	SaveRefreshToken(
 		ctx context.Context,
 		userID uuid.UUID,

@@ -1,6 +1,6 @@
 module github.com/miketevelev/taskana_backend
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/go-playground/validator/v10 v10.30.3
@@ -23,5 +23,5 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sync v0.21.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/text v0.39.0 // indirect
 )

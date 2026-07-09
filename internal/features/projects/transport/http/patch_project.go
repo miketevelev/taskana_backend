@@ -116,8 +116,7 @@ func (h *ProjectsHTTPHandler) PatchProject(
 	projectPatch := projectPatchFromRequest(request)
 
 	projectDomain, err := h.projectsService.PatchProject(
-		ctx, userID,
-		projectID, projectPatch,
+		ctx, userID, projectID, projectPatch,
 	)
 	if err != nil {
 		responseHandler.ErrorResponse(

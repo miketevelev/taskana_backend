@@ -36,9 +36,10 @@ type UserService interface {
 		userAgent *string,
 	) (domain.TokenPair, domain.User, error)
 
-	//DeleteUser(
-	//	ctx context.Context,
-	//) error
+	DeleteUser(
+		ctx context.Context,
+		userID uuid.UUID,
+	) error
 }
 
 func NewUsersHTTPHandler(
@@ -73,6 +74,12 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPatch,
 			Path:       "/user",
 			Handler:    h.PatchUser,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/user",
+			Handler:    h.DeleteUser,
 			Middleware: auth,
 		},
 	}
