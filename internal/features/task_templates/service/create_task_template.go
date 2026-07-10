@@ -13,14 +13,6 @@ func (s *TaskTemplatesService) CreateTaskTemplate(
 	userID uuid.UUID,
 	taskTemplate domain.TaskTemplate,
 ) (domain.TaskTemplate, error) {
-	if taskTemplate.ID == uuid.Nil {
-		taskTemplate.ID = uuid.New()
-	}
-
-	if taskTemplate.Version == -1 {
-		taskTemplate.Version = 1
-	}
-
 	if err := taskTemplate.Validate(); err != nil {
 		return domain.TaskTemplate{},
 			fmt.Errorf("task template validation failed: %w", err)

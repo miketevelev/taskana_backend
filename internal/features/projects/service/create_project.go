@@ -13,14 +13,6 @@ func (s *ProjectService) CreateProject(
 	userID uuid.UUID,
 	project domain.Project,
 ) (domain.Project, error) {
-	if project.ID == uuid.Nil {
-		project.ID = uuid.New()
-	}
-
-	if project.Version == -1 {
-		project.Version = 1
-	}
-
 	if err := project.Validate(); err != nil {
 		return domain.Project{}, fmt.Errorf(
 			"project validation failed: %w", err,

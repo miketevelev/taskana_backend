@@ -8,13 +8,13 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *TaskService) PatchTask(
+func (s *TasksService) PatchTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	taskID uuid.UUID,
 	patch domain.TaskPatch,
 ) (domain.Task, error) {
-	task, err := s.taskRepository.GetTask(ctx, userID, taskID)
+	task, err := s.tasksRepository.GetTask(ctx, userID, taskID)
 	if err != nil {
 		return domain.Task{}, fmt.Errorf(
 			"error while fetching task: %w", err,
@@ -42,11 +42,11 @@ func (s *TaskService) PatchTask(
 	var patchedTask domain.Task
 
 	if projectChanged {
-		patchedTask, err = s.taskRepository.PatchTaskWithProjectChange(
+		patchedTask, err = s.tasksRepository.PatchTaskWithProjectChange(
 			ctx, userID, task, oldPosition, oldProjectID,
 		)
 	} else {
-		patchedTask, err = s.taskRepository.PatchTask(
+		patchedTask, err = s.tasksRepository.PatchTask(
 			ctx, userID, task,
 		)
 	}

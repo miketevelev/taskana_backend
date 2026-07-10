@@ -7,12 +7,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *TaskService) DeleteTask(
+func (s *TasksService) DeleteTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	taskID uuid.UUID,
 ) error {
-	if err := s.taskRepository.DeleteTask(
+	if err := s.tasksRepository.DeleteTask(
 		ctx, userID, taskID,
 	); err != nil {
 		return fmt.Errorf(

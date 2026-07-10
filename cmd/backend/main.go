@@ -26,6 +26,7 @@ import (
 	projects_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/projects/repository/postgres"
 	projects_service "github.com/miketevelev/taskana_backend/internal/features/projects/service"
 	projects_transport_http "github.com/miketevelev/taskana_backend/internal/features/projects/transport/http"
+	recurring_worker "github.com/miketevelev/taskana_backend/internal/features/recurring/worker"
 	task_templates_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/task_templates/reporitory/postgres"
 	task_templates_service "github.com/miketevelev/taskana_backend/internal/features/task_templates/service"
 	task_templates_transport_http "github.com/miketevelev/taskana_backend/internal/features/task_templates/transport/http"
@@ -111,7 +112,7 @@ func main() {
 	)
 
 	// Init Task layers (Repository -> Service -> Handler)
-	tasksRepository := tasks_postgres_repository.NewTaskRepository(pool)
+	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
 	tasksService := tasks_service.NewTaskService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(
 		tasksService, tokenManager,
@@ -119,6 +120,10 @@ func main() {
 
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
+
+	//
+	worker := recurring_worker.NewWorker(tasksService, logger, 24*time.Hour)
+	go worker.Run(ctx)
 
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),

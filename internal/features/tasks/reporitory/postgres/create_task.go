@@ -11,7 +11,7 @@ import (
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
 
-func (r *TaskRepository) CreateTask(
+func (r *TasksRepository) CreateTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	task domain.Task,

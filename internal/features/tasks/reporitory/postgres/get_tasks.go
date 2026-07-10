@@ -8,7 +8,7 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (r *TaskRepository) GetTasks(
+func (r *TasksRepository) GetTasks(
 	ctx context.Context,
 	userID uuid.UUID,
 	limit *int,

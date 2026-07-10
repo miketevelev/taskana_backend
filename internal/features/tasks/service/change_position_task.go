@@ -8,13 +8,13 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *TaskService) ChangePosition(
+func (s *TasksService) ChangePosition(
 	ctx context.Context,
 	userID uuid.UUID,
 	taskID uuid.UUID,
 	newPosition int,
 ) (domain.Task, error) {
-	task, err := s.taskRepository.GetTask(ctx, userID, taskID)
+	task, err := s.tasksRepository.GetTask(ctx, userID, taskID)
 	if err != nil {
 		return domain.Task{}, fmt.Errorf(
 			"error getting task: %w", err,
@@ -29,7 +29,7 @@ func (s *TaskService) ChangePosition(
 
 	task.Position = newPosition
 
-	updatedTask, err := s.taskRepository.ChangePosition(
+	updatedTask, err := s.tasksRepository.ChangePosition(
 		ctx, userID, task, oldPosition,
 	)
 	if err != nil {

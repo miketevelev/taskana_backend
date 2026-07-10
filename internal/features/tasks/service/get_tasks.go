@@ -9,7 +9,7 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func (s *TaskService) GetTasks(
+func (s *TasksService) GetTasks(
 	ctx context.Context,
 	userID uuid.UUID,
 	limit *int,
@@ -28,7 +28,7 @@ func (s *TaskService) GetTasks(
 		)
 	}
 
-	tasks, err := s.taskRepository.GetTasks(ctx, userID, limit, offset)
+	tasks, err := s.tasksRepository.GetTasks(ctx, userID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("get tasks from repository: %w", err)
 	}

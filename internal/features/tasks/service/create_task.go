@@ -8,26 +8,18 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *TaskService) CreateTask(
+func (s *TasksService) CreateTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	task domain.Task,
 ) (domain.Task, error) {
-	if task.ID == uuid.Nil {
-		task.ID = uuid.New()
-	}
-
-	if task.Version == -1 {
-		task.Version = 1
-	}
-
 	if err := task.Validate(); err != nil {
 		return domain.Task{}, fmt.Errorf(
 			"task validation error: %w", err,
 		)
 	}
 
-	createdTask, err := s.taskRepository.CreateTask(
+	createdTask, err := s.tasksRepository.CreateTask(
 		ctx, userID, task,
 	)
 	if err != nil {

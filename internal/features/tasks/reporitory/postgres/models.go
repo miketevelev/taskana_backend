@@ -109,3 +109,41 @@ func scanTask(row interface{ Scan(dest ...any) error }) (TaskModel, error) {
 	}
 	return taskModel, nil
 }
+
+type TaskTemplateModel struct {
+	ID                 uuid.UUID             `json:"id"`
+	Version            int                   `json:"version"`
+	UserID             uuid.UUID             `json:"user_id"`
+	ProjectID          *uuid.UUID            `json:"project_id,omitempty"`
+	HeadingID          *uuid.UUID            `json:"heading_id,omitempty"`
+	Title              string                `json:"title"`
+	Notes              *string               `json:"notes,omitempty"`
+	RecurrenceRule     string                `json:"recurrence_rule"`
+	RecurrenceType     domain.RecurrenceType `json:"recurrence_type"`
+	TargetBucket       domain.TargetBucket   `json:"target_bucket"`
+	NextExecutionDate  time.Time             `json:"next_execution_date"`
+	IsTimeTracked      bool                  `json:"is_time_tracked"`
+	EstimatedPomodoros int                   `json:"estimated_pomodoros"`
+	CreatedAt          time.Time             `json:"created_at"`
+	UpdatedAt          time.Time             `json:"updated_at"`
+}
+
+func taskTemplateDomainFromModel(taskTemplateModel TaskTemplateModel) domain.TaskTemplate {
+	return domain.TaskTemplate{
+		ID:                 taskTemplateModel.ID,
+		Version:            taskTemplateModel.Version,
+		UserID:             taskTemplateModel.UserID,
+		ProjectID:          taskTemplateModel.ProjectID,
+		HeadingID:          taskTemplateModel.HeadingID,
+		Title:              taskTemplateModel.Title,
+		Notes:              taskTemplateModel.Notes,
+		RecurrenceRule:     taskTemplateModel.RecurrenceRule,
+		RecurrenceType:     taskTemplateModel.RecurrenceType,
+		TargetBucket:       taskTemplateModel.TargetBucket,
+		NextExecutionDate:  taskTemplateModel.NextExecutionDate,
+		IsTimeTracked:      taskTemplateModel.IsTimeTracked,
+		EstimatedPomodoros: taskTemplateModel.EstimatedPomodoros,
+		CreatedAt:          taskTemplateModel.CreatedAt,
+		UpdatedAt:          taskTemplateModel.UpdatedAt,
+	}
+}
