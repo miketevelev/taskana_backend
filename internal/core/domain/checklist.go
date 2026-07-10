@@ -65,6 +65,13 @@ func NewChecklistUninitialized(
 }
 
 func (c *Checklist) Validate() error {
+	if c.ID == uuid.Nil {
+		return fmt.Errorf(
+			"checklist id cannot be empty: %w",
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
 	titleLength := len([]rune(strings.TrimSpace(c.Title)))
 	if titleLength < 3 || titleLength > 255 {
 		return fmt.Errorf(

@@ -13,6 +13,14 @@ func (s *AreasService) CreateArea(
 	userID uuid.UUID,
 	area domain.Area,
 ) (domain.Area, error) {
+	if area.ID == uuid.Nil {
+		area.ID = uuid.New()
+	}
+
+	if area.Version == -1 {
+		area.Version = 1
+	}
+
 	if err := area.Validate(); err != nil {
 		return domain.Area{},
 			fmt.Errorf("area validation failed: %w", err)

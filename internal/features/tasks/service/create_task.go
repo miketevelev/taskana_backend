@@ -13,6 +13,14 @@ func (s *TasksService) CreateTask(
 	userID uuid.UUID,
 	task domain.Task,
 ) (domain.Task, error) {
+	if task.ID == uuid.Nil {
+		task.ID = uuid.New()
+	}
+
+	if task.Version == -1 {
+		task.Version = 1
+	}
+
 	if err := task.Validate(); err != nil {
 		return domain.Task{}, fmt.Errorf(
 			"task validation error: %w", err,

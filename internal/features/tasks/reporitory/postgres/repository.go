@@ -122,16 +122,16 @@ func (r *TasksRepository) ProcessNextDueFixedTemplateTx(
 	defer tx.Rollback(ctx)
 
 	queryLock := `
-		SELECT id, version, user_id, project_id, heading_id, title, notes,
-		       recurrence_rule, recurrence_type, target_bucket, next_execution_date,
-		       is_time_tracked, estimated_pomodoros, created_at, updated_at
-		FROM taskana.task_templates
-		WHERE recurrence_type = 'fixed'
-		  AND next_execution_date <= $1
-		ORDER BY next_execution_date ASC
-		FOR UPDATE SKIP LOCKED
-		LIMIT 1
-	`
+        SELECT id, version, user_id, project_id, heading_id, title, notes,
+               recurrence_rule, recurrence_type, target_bucket, next_execution_date,
+               is_time_tracked, estimated_pomodoros, created_at, updated_at
+        FROM taskana.task_templates
+        WHERE recurrence_type = 'fixed'
+          AND next_execution_date <= $1
+        ORDER BY next_execution_date ASC
+        FOR UPDATE SKIP LOCKED
+        LIMIT 1
+    `
 
 	var m TaskTemplateModel
 	err = tx.QueryRow(ctx, queryLock, asOf).Scan(
@@ -156,49 +156,34 @@ func (r *TasksRepository) ProcessNextDueFixedTemplateTx(
 	}
 
 	insertTaskQuery := `
-		INSERT INTO taskana.tasks (
-			id, version, user_id, project_id, heading_id, template_id,
-			title, notes, status, bucket, start_date, deadline,
-			position, is_time_tracked, estimated_pomodoros, completed_at,
-			created_at, updated_at
-		) VALUES (
-			$1, $2, $3, $4, $5, $6,
-			$7, $8, $9, $10, $11, $12,
-			$13, $14, $15, $16, $17, $18
-		)
-	`
+        INSERT INTO taskana.tasks (
+            id, version, user_id, project_id, heading_id, template_id,
+            title, notes, status, bucket, start_date, deadline,
+            position, is_time_tracked, estimated_pomodoros, completed_at,
+            created_at, updated_at
+        ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
+            $13, $14, $15, $16, $17, $18
+        )
+    `
 
 	_, err = tx.Exec(
-		ctx,
-		insertTaskQuery,
-		newTask.ID,
-		newTask.Version,
-		newTask.UserID,
-		newTask.ProjectID,
-		newTask.HeadingID,
-		newTask.TemplateID,
-		newTask.Title,
-		newTask.Notes,
-		newTask.Status,
-		newTask.Bucket,
-		newTask.StartDate,
-		newTask.Deadline,
-		newTask.Position,
-		newTask.IsTimeTracked,
-		newTask.EstimatedPomodoros,
-		newTask.CompletedAt,
-		newTask.CreatedAt,
-		newTask.UpdatedAt,
+		ctx, insertTaskQuery,
+		newTask.ID, newTask.Version, newTask.UserID, newTask.ProjectID,
+		newTask.HeadingID, newTask.TemplateID, newTask.Title, newTask.Notes,
+		newTask.Status, newTask.Bucket, newTask.StartDate, newTask.Deadline,
+		newTask.Position, newTask.IsTimeTracked, newTask.EstimatedPomodoros,
+		newTask.CompletedAt, newTask.CreatedAt, newTask.UpdatedAt,
 	)
 	if err != nil {
 		return false, fmt.Errorf("insert generated task: %w", err)
 	}
 
 	updateTemplateQuery := `
-		UPDATE taskana.task_templates
-		SET next_execution_date = $1, updated_at = NOW()
-		WHERE id = $2
-	`
+        UPDATE taskana.task_templates
+        SET next_execution_date = $1, updated_at = NOW()
+        WHERE id = $2
+    `
 	_, err = tx.Exec(ctx, updateTemplateQuery, nextDate, template.ID)
 	if err != nil {
 		return false, fmt.Errorf("update template next date: %w", err)

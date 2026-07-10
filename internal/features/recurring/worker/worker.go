@@ -2,6 +2,7 @@ package recurring_worker
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	core_logger "github.com/miketevelev/taskana_backend/internal/core/logger"
@@ -50,6 +51,14 @@ func (w *Worker) Run(ctx context.Context) {
 func (w *Worker) runOnce(ctx context.Context) {
 	asOf := time.Now().UTC()
 	if err := w.processor.ProcessFixedRecurrences(ctx, asOf); err != nil {
+		if strings.Contains(err.Error(), "no rows") {
+			w.log.Info("all tasks for templates for today have been created")
+			return
+		}
+
 		w.log.Error("process fixed recurrences failed", zap.Error(err))
+		return
 	}
+
+	w.log.Info("all tasks for templates for today have been created")
 }

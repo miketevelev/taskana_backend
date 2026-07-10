@@ -99,7 +99,9 @@ func (s *TasksService) ProcessFixedRecurrences(
 		processed, err := s.tasksRepository.ProcessNextDueFixedTemplateTx(
 			ctx,
 			asOf,
-			s.generateFixedTaskData,
+			func(template domain.TaskTemplate) (domain.Task, time.Time, error) {
+				return s.generateFixedTaskData(template, asOf)
+			},
 		)
 
 		if err != nil {
@@ -116,6 +118,7 @@ func (s *TasksService) ProcessFixedRecurrences(
 
 func (s *TasksService) generateFixedTaskData(
 	template domain.TaskTemplate,
+	asOf time.Time,
 ) (domain.Task, time.Time, error) {
 	bucket := domain.TaskBucketInbox
 	if template.TargetBucket == domain.TargetBucketToday {
@@ -136,8 +139,13 @@ func (s *TasksService) generateFixedTaskData(
 		template.EstimatedPomodoros,
 	)
 
-	task.ID = uuid.New()
-	task.Version = 1
+	if task.ID == uuid.Nil {
+		task.ID = uuid.New()
+	}
+
+	if task.Version == -1 {
+		task.Version = 1
+	}
 
 	if err := task.Validate(); err != nil {
 		return domain.Task{}, time.Time{}, fmt.Errorf(
@@ -145,65 +153,29 @@ func (s *TasksService) generateFixedTaskData(
 		)
 	}
 
-	nextDate, err := core_recurrence.NextFixedDate(
-		template.RecurrenceRule,
-		template.NextExecutionDate,
-	)
-	if err != nil {
-		return domain.Task{}, time.Time{}, fmt.Errorf(
-			"calculate next fixed date: %w", err,
+	nextDate := template.NextExecutionDate
+
+	for !nextDate.After(asOf) {
+		prevDate := nextDate
+		var err error
+
+		nextDate, err = core_recurrence.NextFixedDate(
+			template.RecurrenceRule,
+			nextDate,
 		)
+
+		if err != nil {
+			return domain.Task{}, time.Time{}, fmt.Errorf(
+				"calculate next fixed date: %w", err,
+			)
+		}
+
+		if !nextDate.After(prevDate) {
+			return domain.Task{}, time.Time{}, fmt.Errorf(
+				"recurrence rule failed to advance date strictly forward",
+			)
+		}
 	}
 
 	return task, nextDate, nil
 }
-
-//func (s *TasksService) generateFixedTask(
-//	ctx context.Context,
-//	template domain.TaskTemplate,
-//) error {
-//	bucket := domain.TaskBucketInbox
-//	if template.TargetBucket == domain.TargetBucketToday {
-//		bucket = domain.TaskBucketToday
-//	}
-//
-//	task := domain.NewTaskUninitialized(
-//		template.UserID,
-//		template.ProjectID,
-//		template.HeadingID,
-//		&template.ID,
-//		template.Title,
-//		template.Notes,
-//		bucket,
-//		nil,
-//		nil,
-//		template.IsTimeTracked,
-//		template.EstimatedPomodoros,
-//	)
-//
-//	if err := task.Validate(); err != nil {
-//		return fmt.Errorf("invalid generated task: %w", err)
-//	}
-//
-//	nextDate, err := core_recurrence.NextFixedDate(
-//		template.RecurrenceRule,
-//		template.NextExecutionDate,
-//	)
-//	if err != nil {
-//		return fmt.Errorf("calculate next fixed date: %w", err)
-//	}
-//
-//	if _, err := s.tasksRepository.CreateTask(
-//		ctx, template.UserID, task,
-//	); err != nil {
-//		return fmt.Errorf("create fixed recurring task: %w", err)
-//	}
-//
-//	if err := s.tasksRepository.UpdateTemplateNextExecution(
-//		ctx, template.UserID, template.ID, nextDate,
-//	); err != nil {
-//		return fmt.Errorf("update template next execution date: %w", err)
-//	}
-//
-//	return nil
-//}

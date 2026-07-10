@@ -11,6 +11,14 @@ import (
 )
 
 func NextFixedDate(rule string, after time.Time) (time.Time, error) {
+	if !strings.Contains(strings.ToUpper(rule), "DTSTART") {
+		if !strings.Contains(strings.ToUpper(rule), "RRULE:") {
+			rule = "RRULE:" + rule
+		}
+		dtStart := after.UTC().Format("20060102T150405Z")
+		rule = fmt.Sprintf("DTSTART:%s\n%s", dtStart, rule)
+	}
+
 	r, err := rrule.StrToRRule(rule)
 	if err != nil {
 		return time.Time{}, fmt.Errorf(
@@ -23,6 +31,20 @@ func NextFixedDate(rule string, after time.Time) (time.Time, error) {
 		return time.Time{}, fmt.Errorf(
 			"no next occurrence: %w", core_errors.ErrInvalidArgument,
 		)
+	}
+
+	if truncateDate(next).Equal(truncateDate(after)) {
+		endOfDay := time.Date(
+			after.Year(), after.Month(), after.Day(), 23, 59, 59, 999999999,
+			after.Location(),
+		)
+		next = r.After(endOfDay, false)
+		if next.IsZero() {
+			return time.Time{}, fmt.Errorf(
+				"no next occurrence after day advancement: %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
 	}
 
 	return truncateDate(next), nil

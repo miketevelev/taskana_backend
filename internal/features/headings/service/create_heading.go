@@ -13,6 +13,14 @@ func (s *HeadingService) CreateHeading(
 	userID uuid.UUID,
 	heading domain.Heading,
 ) (domain.Heading, error) {
+	if heading.ID == uuid.Nil {
+		heading.ID = uuid.New()
+	}
+
+	if heading.Version == -1 {
+		heading.Version = 1
+	}
+
 	if err := heading.Validate(); err != nil {
 		return domain.Heading{}, fmt.Errorf(
 			"heading validation failed: %w",

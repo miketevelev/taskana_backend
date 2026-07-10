@@ -179,7 +179,7 @@ CREATE INDEX idx_tasks_bucket_position ON taskana.tasks (user_id, bucket, positi
 -- =========================================================================
 -- TABLE: CHECKLIST ITEMS
 -- =========================================================================
-CREATE TABLE taskana.checklist_items
+CREATE TABLE taskana.checklists
 (
     id           UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
     version      BIGINT       NOT NULL DEFAULT 1,
@@ -192,8 +192,9 @@ CREATE TABLE taskana.checklist_items
     updated_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_checklist_items_user_id ON taskana.checklist_items (user_id);
-CREATE INDEX idx_checklist_items_task_position ON taskana.checklist_items (task_id, position);
+CREATE INDEX idx_checklists_user_id ON taskana.checklists (user_id);
+CREATE INDEX idx_checklists_task_position ON taskana.checklists (task_id,
+                                                                position);
 
 -- =========================================================================
 -- TABLE: POMODORO SESSION
