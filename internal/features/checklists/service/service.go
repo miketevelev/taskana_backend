@@ -12,6 +12,19 @@ type ChecklistsService struct {
 }
 
 type ChecklistsRepository interface {
+	GetChecklist(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklistID uuid.UUID,
+	) (domain.Checklist, error)
+
+	GetChecklists(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Checklist, error)
+
 	CreateChecklist(
 		ctx context.Context,
 		userID uuid.UUID,

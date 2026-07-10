@@ -17,6 +17,19 @@ type ChecklistsHTTPHandler struct {
 }
 
 type ChecklistsService interface {
+	GetChecklist(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklistID uuid.UUID,
+	) (domain.Checklist, error)
+
+	GetChecklists(
+		ctx context.Context,
+		userID uuid.UUID,
+		limit *int,
+		offset *int,
+	) ([]domain.Checklist, error)
+
 	CreateChecklist(
 		ctx context.Context,
 		userID uuid.UUID,
@@ -40,6 +53,18 @@ func (h *ChecklistsHTTPHandler) Routes() []core_http_server.Route {
 	}
 
 	return []core_http_server.Route{
+		{
+			Method:     http.MethodGet,
+			Path:       "/checklists/{id}",
+			Handler:    h.GetChecklist,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodGet,
+			Path:       "/checklists",
+			Handler:    h.GetChecklists,
+			Middleware: auth,
+		},
 		{
 			Method:     http.MethodPost,
 			Path:       "/checklists",
