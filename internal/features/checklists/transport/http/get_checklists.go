@@ -1,4 +1,4 @@
-package projects_transport_http
+package checklists_transport_http
 
 import (
 	"net/http"
@@ -9,7 +9,9 @@ import (
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 )
 
-func (h *ProjectsHTTPHandler) DeleteProject(
+type GetChecklistsResponse []ChecklistDTOResponse
+
+func (h *ChecklistsHTTPHandler) GetChecklists(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -19,24 +21,27 @@ func (h *ProjectsHTTPHandler) DeleteProject(
 
 	userID := core_auth.MustUserIDFromContext(ctx)
 
-	projectID, err := core_http_request.GetUUIDPathValue(r, "id")
+	limit, offset, err := core_http_request.GetLimitOffsetQueryParams(r)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to get project ID path value",
+			"failed to get limit and offset query params",
 		)
 		return
 	}
 
-	if err := h.projectsService.DeleteProject(
-		ctx, userID, projectID,
-	); err != nil {
+	checklists, err := h.checklistsService.GetChecklists(
+		ctx, userID, limit, offset,
+	)
+	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to delete project",
+			"failed to get checklists",
 		)
 		return
 	}
 
-	responseHandler.NoContentResponse()
+	response := GetChecklistsResponse(checklistDTOsFromDomains(checklists))
+
+	responseHandler.JSONResponse(response, http.StatusOK)
 }

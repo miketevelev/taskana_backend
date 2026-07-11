@@ -1,4 +1,4 @@
-package tasks_service
+package checklists_service
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func (s *TasksService) GetTasks(
+func (s *ChecklistsService) GetChecklists(
 	ctx context.Context,
 	userID uuid.UUID,
 	limit *int,
 	offset *int,
-) ([]domain.Task, error) {
+) ([]domain.Checklist, error) {
 	if limit != nil && *limit < 0 {
 		return nil, fmt.Errorf(
 			"limit must be non-negative: %w",
@@ -28,10 +28,12 @@ func (s *TasksService) GetTasks(
 		)
 	}
 
-	tasks, err := s.tasksRepository.GetTasks(ctx, userID, limit, offset)
+	checklists, err := s.checklistRepository.GetChecklists(
+		ctx, userID, limit, offset,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("get tasks from repository: %w", err)
+		return nil, fmt.Errorf("get checklists from repository: %w", err)
 	}
 
-	return tasks, nil
+	return checklists, nil
 }

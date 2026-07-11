@@ -12,7 +12,7 @@ import (
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
 
-func (r *TaskRepository) PatchTask(
+func (r *TasksRepository) PatchTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	task domain.Task,
@@ -83,7 +83,7 @@ func (r *TaskRepository) PatchTask(
 	return taskDomainFromModel(taskModel), nil
 }
 
-func (r *TaskRepository) PatchTaskWithProjectChange(
+func (r *TasksRepository) PatchTaskWithProjectChange(
 	ctx context.Context,
 	userID uuid.UUID,
 	task domain.Task,

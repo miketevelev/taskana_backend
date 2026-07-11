@@ -8,7 +8,7 @@ import (
 	"github.com/miketevelev/taskana_backend/internal/core/domain"
 )
 
-func (s *TaskService) CreateTask(
+func (s *TasksService) CreateTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	task domain.Task,
@@ -27,7 +27,7 @@ func (s *TaskService) CreateTask(
 		)
 	}
 
-	createdTask, err := s.taskRepository.CreateTask(
+	createdTask, err := s.tasksRepository.CreateTask(
 		ctx, userID, task,
 	)
 	if err != nil {

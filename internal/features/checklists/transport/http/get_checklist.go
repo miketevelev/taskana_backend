@@ -1,4 +1,4 @@
-package projects_transport_http
+package checklists_transport_http
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
 )
 
-func (h *ProjectsHTTPHandler) DeleteProject(
+func (h *ChecklistsHTTPHandler) GetChecklist(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -19,24 +19,25 @@ func (h *ProjectsHTTPHandler) DeleteProject(
 
 	userID := core_auth.MustUserIDFromContext(ctx)
 
-	projectID, err := core_http_request.GetUUIDPathValue(r, "id")
+	checklistID, err := core_http_request.GetUUIDPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to get project ID path value",
+			"failed to decode checklist request",
 		)
 		return
 	}
 
-	if err := h.projectsService.DeleteProject(
-		ctx, userID, projectID,
-	); err != nil {
+	checklist, err := h.checklistsService.GetChecklist(ctx, userID, checklistID)
+	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
-			"failed to delete project",
+			"failed to get checklist",
 		)
 		return
 	}
 
-	responseHandler.NoContentResponse()
+	response := checklistDTOFromDomain(checklist)
+
+	responseHandler.JSONResponse(response, http.StatusOK)
 }

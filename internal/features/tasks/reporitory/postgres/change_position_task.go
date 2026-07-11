@@ -12,7 +12,7 @@ import (
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
 
-func (r *TaskRepository) ChangePosition(
+func (r *TasksRepository) ChangePosition(
 	ctx context.Context,
 	userID uuid.UUID,
 	task domain.Task,

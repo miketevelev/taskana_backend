@@ -8,7 +8,7 @@ import (
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
-func (r *TaskRepository) DeleteTask(
+func (r *TasksRepository) DeleteTask(
 	ctx context.Context,
 	userID uuid.UUID,
 	taskID uuid.UUID,
