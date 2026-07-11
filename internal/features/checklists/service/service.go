@@ -44,11 +44,11 @@ type ChecklistsRepository interface {
 		checklist domain.Checklist,
 	) (domain.Checklist, error)
 
-	//DeleteChecklist(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	checklistID uuid.UUID,
-	//) error
+	DeleteChecklist(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklistID uuid.UUID,
+	) error
 }
 
 func NewChecklistsService(

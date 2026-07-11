@@ -50,11 +50,11 @@ type ChecklistsService interface {
 		patch domain.ChecklistPatch,
 	) (domain.Checklist, error)
 
-	//DeleteChecklist(
-	//	ctx context.Context,
-	//	userID uuid.UUID,
-	//	checklistID uuid.UUID,
-	//) (domain.Checklist, error)
+	DeleteChecklist(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklistID uuid.UUID,
+	) error
 }
 
 func NewChecklistsHTTPHandler(
@@ -103,11 +103,11 @@ func (h *ChecklistsHTTPHandler) Routes() []core_http_server.Route {
 			Handler:    h.PatchChecklist,
 			Middleware: auth,
 		},
-		//{
-		//	Method:     http.MethodDelete,
-		//	Path:       "/checklists/{id}",
-		//	Handler:    h.DeleteChecklist,
-		//	Middleware: auth,
-		//},
+		{
+			Method:     http.MethodDelete,
+			Path:       "/checklists/{id}",
+			Handler:    h.DeleteChecklist,
+			Middleware: auth,
+		},
 	}
 }
