@@ -37,6 +37,18 @@ type ChecklistsRepository interface {
 		checklist domain.Checklist,
 		oldPosition int,
 	) (domain.Checklist, error)
+
+	PatchChecklist(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklist domain.Checklist,
+	) (domain.Checklist, error)
+
+	//DeleteChecklist(
+	//	ctx context.Context,
+	//	userID uuid.UUID,
+	//	checklistID uuid.UUID,
+	//) error
 }
 
 func NewChecklistsService(
