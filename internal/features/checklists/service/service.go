@@ -30,6 +30,13 @@ type ChecklistsRepository interface {
 		userID uuid.UUID,
 		checklist domain.Checklist,
 	) (domain.Checklist, error)
+
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklist domain.Checklist,
+		oldPosition int,
+	) (domain.Checklist, error)
 }
 
 func NewChecklistsService(

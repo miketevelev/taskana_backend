@@ -35,6 +35,13 @@ type ChecklistsService interface {
 		userID uuid.UUID,
 		checklist domain.Checklist,
 	) (domain.Checklist, error)
+
+	ChangePosition(
+		ctx context.Context,
+		userID uuid.UUID,
+		checklistID uuid.UUID,
+		newPosition int,
+	) (domain.Checklist, error)
 }
 
 func NewChecklistsHTTPHandler(
@@ -69,6 +76,12 @@ func (h *ChecklistsHTTPHandler) Routes() []core_http_server.Route {
 			Method:     http.MethodPost,
 			Path:       "/checklists",
 			Handler:    h.CreateChecklist,
+			Middleware: auth,
+		},
+		{
+			Method:     http.MethodPost,
+			Path:       "/checklists/{id}",
+			Handler:    h.ChangePosition,
 			Middleware: auth,
 		},
 	}
