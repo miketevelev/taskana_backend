@@ -30,6 +30,7 @@ func (h *HTTPResponseHandler) JSONResponse(
 	responseBody any,
 	statusCode int,
 ) {
+	h.rw.Header().Set("Content-Type", "application/json")
 	h.rw.WriteHeader(statusCode)
 	if err := json.NewEncoder(h.rw).Encode(responseBody); err != nil {
 		h.log.Error("failed to encode response body", zap.Error(err))
@@ -53,11 +54,22 @@ func (h *HTTPResponseHandler) ErrorResponse(
 	case errors.Is(err, core_errors.ErrInvalidArgument):
 		statusCode = http.StatusBadRequest
 		logFunc = h.log.Warn
+	case errors.Is(err, core_errors.ErrUnauthorized):
+		statusCode = http.StatusUnauthorized
+		logFunc = h.log.Warn
+	case errors.Is(err, core_errors.ErrForbidden):
+		statusCode = http.StatusForbidden
+		logFunc = h.log.Warn
 	case errors.Is(err, core_errors.ErrNotFound):
 		statusCode = http.StatusNotFound
 		logFunc = h.log.Debug
-	case errors.Is(err, core_errors.ErrConflict):
+	case errors.Is(err, core_errors.ErrConflict), errors.Is(
+		err, core_errors.ErrAlreadyExists,
+	):
 		statusCode = http.StatusConflict
+		logFunc = h.log.Warn
+	case errors.Is(err, core_errors.ErrTooManyRequests):
+		statusCode = http.StatusTooManyRequests
 		logFunc = h.log.Warn
 	default:
 		statusCode = http.StatusInternalServerError

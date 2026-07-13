@@ -72,7 +72,7 @@ func (s *AuthService) issueTokenPair(
 		)
 	}
 
-	refreshToken, err := core_auth.GenerateRefreshToken(userID)
+	refreshToken, err := core_auth.GenerateRefreshToken()
 	if err != nil {
 		return domain.TokenPair{}, fmt.Errorf(
 			"generating refresh token failed: %w", err,

@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	core_auth "github.com/miketevelev/taskana_backend/internal/core/auth"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	domain_area "github.com/miketevelev/taskana_backend/internal/core/domain/area"
 	core_logger "github.com/miketevelev/taskana_backend/internal/core/logger"
 	core_http_request "github.com/miketevelev/taskana_backend/internal/core/transport/http/request"
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
@@ -54,8 +54,8 @@ func (h *AreasHTTPHandler) CreateArea(w http.ResponseWriter, r *http.Request) {
 func domainFromDTO(
 	userID uuid.UUID,
 	dto CreateAreaRequest,
-) domain.Area {
-	return domain.NewAreaUninitialized(
+) domain_area.Area {
+	return domain_area.NewAreaUninitialized(
 		userID,
 		dto.Title,
 	)

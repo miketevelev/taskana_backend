@@ -24,6 +24,7 @@ func (s *HeadingService) CreateHeading(
 	if err := heading.Validate(); err != nil {
 		return domain.Heading{}, fmt.Errorf(
 			"heading validation failed: %w",
+			err,
 		)
 	}
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
@@ -15,15 +15,15 @@ import (
 func (r *AreasRepository) ChangePosition(
 	ctx context.Context,
 	userID uuid.UUID,
-	area domain.Area,
+	area domain_area.Area,
 	oldPosition int,
-) (domain.Area, error) {
+) (domain_area.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
-		return domain.Area{}, err
+		return domain_area.Area{}, err
 	}
 	defer tx.Rollback(ctx)
 
@@ -31,14 +31,14 @@ func (r *AreasRepository) ChangePosition(
 	if err := tx.QueryRow(
 		ctx, `SELECT COUNT(*) FROM taskana.areas WHERE user_id = $1`, userID,
 	).Scan(&count); err != nil {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"failed to get areas count: %w", err,
 		)
 	}
 
 	newPos := area.Position
 	if newPos > count || newPos < 1 {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"position %d out of bounds, max allowed is %d: %w",
 			newPos, count, core_errors.ErrInvalidArgument,
 		)
@@ -63,7 +63,7 @@ func (r *AreasRepository) ChangePosition(
 	}
 
 	if err != nil {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"failed to shift neighboring positions: %w", err,
 		)
 	}
@@ -89,15 +89,17 @@ func (r *AreasRepository) ChangePosition(
 	areaModel, err := scanArea(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Area{}, fmt.Errorf(
+			return domain_area.Area{}, fmt.Errorf(
 				"area concurrently accessed: %w", core_errors.ErrConflict,
 			)
 		}
-		return domain.Area{}, fmt.Errorf("change position repository: %w", err)
+		return domain_area.Area{}, fmt.Errorf(
+			"change position repository: %w", err,
+		)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"failed to commit reordering transaction: %w", err,
 		)
 	}

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 )
 
 type AreaDTOResponse struct {
@@ -17,7 +17,7 @@ type AreaDTOResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func areaDTOFromDomain(area domain.Area) AreaDTOResponse {
+func areaDTOFromDomain(area domain_area.Area) AreaDTOResponse {
 	return AreaDTOResponse{
 		ID:        area.ID,
 		Version:   area.Version,
@@ -29,7 +29,7 @@ func areaDTOFromDomain(area domain.Area) AreaDTOResponse {
 	}
 }
 
-func areasDTOsFromDomains(areas []domain.Area) []AreaDTOResponse {
+func areasDTOsFromDomains(areas []domain_area.Area) []AreaDTOResponse {
 	result := make([]AreaDTOResponse, len(areas))
 	for i, t := range areas {
 		result[i] = areaDTOFromDomain(t)

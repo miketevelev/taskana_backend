@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 )
 
 func (r *AreasRepository) GetAreas(
@@ -13,7 +13,7 @@ func (r *AreasRepository) GetAreas(
 	userID uuid.UUID,
 	limit *int,
 	offset *int,
-) ([]domain.Area, error) {
+) ([]domain_area.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 

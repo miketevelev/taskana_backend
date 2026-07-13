@@ -1,8 +1,9 @@
 package core_auth
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -108,16 +109,21 @@ func (m *TokenManager) AccessTokenTTLSeconds() int64 {
 	return int64(m.config.AccessTokenTTL.Seconds())
 }
 
-func GenerateRefreshToken(userID uuid.UUID) (string, error) {
-	return userID.String() + "." + uuid.NewString() + uuid.NewString(), nil
+func GenerateRefreshToken() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", fmt.Errorf("failed to generate refresh token: %w", err)
+	}
+
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(b), nil
 }
 
-func ParseRefreshTokenUserID(refreshToken string) (uuid.UUID, error) {
-	parts := strings.SplitN(refreshToken, ".", 2)
-	if len(parts) != 2 {
-		return uuid.Nil, fmt.Errorf(
-			"invalid refresh token format: %w", core_errors.ErrUnauthorized,
-		)
-	}
-	return uuid.Parse(parts[0])
-}
+//func ParseRefreshTokenUserID(refreshToken string) (uuid.UUID, error) {
+//	parts := strings.SplitN(refreshToken, ".", 2)
+//	if len(parts) != 2 {
+//		return uuid.Nil, fmt.Errorf(
+//			"invalid refresh token format: %w", core_errors.ErrUnauthorized,
+//		)
+//	}
+//	return uuid.Parse(parts[0])
+//}

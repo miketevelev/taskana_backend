@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	core_auth "github.com/miketevelev/taskana_backend/internal/core/auth"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 	core_logger "github.com/miketevelev/taskana_backend/internal/core/logger"
 	core_http_request "github.com/miketevelev/taskana_backend/internal/core/transport/http/request"
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
@@ -78,8 +78,8 @@ func (h *AreasHTTPHandler) PatchArea(w http.ResponseWriter, r *http.Request) {
 	responseHandler.JSONResponse(response, http.StatusOK)
 }
 
-func areaPatchFromRequest(request PatchAreaRequest) domain.AreaPatch {
-	return domain.NewAreaPatch(
+func areaPatchFromRequest(request PatchAreaRequest) domain_area.AreaPatch {
+	return domain_area.NewAreaPatch(
 		request.Title.ToDomain(),
 	)
 }

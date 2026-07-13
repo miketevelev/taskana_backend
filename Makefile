@@ -74,3 +74,25 @@ logs-cleanup:
 	else \
 	  echo "Logs cleanup is decline"; \
 	fi
+
+backend-test:
+	@echo "==> Running tests..."
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go test -v -race -count=1 ./...
+
+.PHONY: test-coverage
+COVERAGE_DIR ?= out/coverage
+
+test-coverage:
+	@echo "==> Running tests with coverage..."
+	@mkdir -p $(COVERAGE_DIR)
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go test -coverprofile=$(COVERAGE_DIR)/coverage.out ./...
+
+	@echo "==> Generating HTML report..."
+	@go tool cover -html=$(COVERAGE_DIR)/coverage.out -o $(COVERAGE_DIR)/coverage.html
+
+	@echo "==> Coverage report saved to $(COVERAGE_DIR)/coverage.html"
+	@open $(COVERAGE_DIR)/coverage.html

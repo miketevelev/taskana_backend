@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 )
 
 type AreasService struct {
@@ -16,40 +16,40 @@ type AreasRepository interface {
 		ctx context.Context,
 		userID uuid.UUID,
 		areaID uuid.UUID,
-	) (domain.Area, error)
+	) (domain_area.Area, error)
 
 	GetAreas(
 		ctx context.Context,
 		userID uuid.UUID,
 		limit *int,
 		offset *int,
-	) ([]domain.Area, error)
+	) ([]domain_area.Area, error)
 
 	CreateArea(
 		ctx context.Context,
 		userID uuid.UUID,
-		area domain.Area,
-	) (domain.Area, error)
+		area domain_area.Area,
+	) (domain_area.Area, error)
 
 	ChangePosition(
 		ctx context.Context,
 		userID uuid.UUID,
-		area domain.Area,
+		area domain_area.Area,
 		oldPosition int,
-	) (domain.Area, error)
+	) (domain_area.Area, error)
 
 	PatchArea(
 		ctx context.Context,
 		userID uuid.UUID,
-		area domain.Area,
-	) (domain.Area, error)
+		area domain_area.Area,
+	) (domain_area.Area, error)
 
 	PatchAreaWithReordering(
 		ctx context.Context,
 		userID uuid.UUID,
-		area domain.Area,
+		area domain_area.Area,
 		oldPos int,
-	) (domain.Area, error)
+	) (domain_area.Area, error)
 
 	DeleteArea(
 		ctx context.Context,

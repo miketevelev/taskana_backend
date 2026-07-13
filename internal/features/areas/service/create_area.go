@@ -5,14 +5,14 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	domain_area "github.com/miketevelev/taskana_backend/internal/core/domain/area"
 )
 
 func (s *AreasService) CreateArea(
 	ctx context.Context,
 	userID uuid.UUID,
-	area domain.Area,
-) (domain.Area, error) {
+	area domain_area.Area,
+) (domain_area.Area, error) {
 	if area.ID == uuid.Nil {
 		area.ID = uuid.New()
 	}
@@ -22,13 +22,13 @@ func (s *AreasService) CreateArea(
 	}
 
 	if err := area.Validate(); err != nil {
-		return domain.Area{},
+		return domain_area.Area{},
 			fmt.Errorf("area validation failed: %w", err)
 	}
 
 	createdArea, err := s.areasRepository.CreateArea(ctx, userID, area)
 	if err != nil {
-		return domain.Area{}, fmt.Errorf("create area failed: %w", err)
+		return domain_area.Area{}, fmt.Errorf("create area failed: %w", err)
 	}
 
 	return createdArea, nil

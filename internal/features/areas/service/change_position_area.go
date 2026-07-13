@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 )
 
 func (s *AreasService) ChangePosition(
@@ -13,10 +13,10 @@ func (s *AreasService) ChangePosition(
 	userID uuid.UUID,
 	areaID uuid.UUID,
 	newPosition int,
-) (domain.Area, error) {
+) (domain_area.Area, error) {
 	area, err := s.areasRepository.GetArea(ctx, userID, areaID)
 	if err != nil {
-		return domain.Area{}, fmt.Errorf("error getting area: %w", err)
+		return domain_area.Area{}, fmt.Errorf("error getting area: %w", err)
 	}
 
 	oldPosition := area.Position
@@ -31,7 +31,7 @@ func (s *AreasService) ChangePosition(
 		ctx, userID, area, oldPosition,
 	)
 	if err != nil {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"error changing position in repository: %w", err,
 		)
 	}

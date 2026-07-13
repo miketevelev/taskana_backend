@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	core_auth "github.com/miketevelev/taskana_backend/internal/core/auth"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 	core_http_middleware "github.com/miketevelev/taskana_backend/internal/core/transport/http/middleware"
 	core_http_server "github.com/miketevelev/taskana_backend/internal/core/transport/http/server"
 )
@@ -21,34 +21,34 @@ type AreasService interface {
 		ctx context.Context,
 		userID uuid.UUID,
 		areaID uuid.UUID,
-	) (domain.Area, error)
+	) (domain_area.Area, error)
 
 	GetAreas(
 		ctx context.Context,
 		userID uuid.UUID,
 		limit *int,
 		offset *int,
-	) ([]domain.Area, error)
+	) ([]domain_area.Area, error)
 
 	CreateArea(
 		ctx context.Context,
 		userID uuid.UUID,
-		area domain.Area,
-	) (domain.Area, error)
+		area domain_area.Area,
+	) (domain_area.Area, error)
 
 	ChangePosition(
 		ctx context.Context,
 		userID uuid.UUID,
 		areaID uuid.UUID,
 		newPosition int,
-	) (domain.Area, error)
+	) (domain_area.Area, error)
 
 	PatchArea(
 		ctx context.Context,
 		userID uuid.UUID,
 		areaID uuid.UUID,
-		patch domain.AreaPatch,
-	) (domain.Area, error)
+		patch domain_area.AreaPatch,
+	) (domain_area.Area, error)
 
 	DeleteArea(
 		ctx context.Context,

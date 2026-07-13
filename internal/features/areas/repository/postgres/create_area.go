@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
@@ -14,8 +14,8 @@ import (
 func (r *AreasRepository) CreateArea(
 	ctx context.Context,
 	userID uuid.UUID,
-	area domain.Area,
-) (domain.Area, error) {
+	area domain_area.Area,
+) (domain_area.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -46,13 +46,13 @@ func (r *AreasRepository) CreateArea(
 	areaModel, err := scanArea(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrViolateForeignKey) {
-			return domain.Area{}, fmt.Errorf(
+			return domain_area.Area{}, fmt.Errorf(
 				"user not found for new area: %w",
 				core_errors.ErrNotFound,
 			)
 		}
 
-		return domain.Area{}, fmt.Errorf("scan area from db: %w", err)
+		return domain_area.Area{}, fmt.Errorf("scan area from db: %w", err)
 	}
 
 	areaDomain := areaDomainFromModel(areaModel)

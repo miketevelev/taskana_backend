@@ -1,4 +1,4 @@
-package domain
+package domain_area
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/miketevelev/taskana_backend/internal/core/domain"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
@@ -46,8 +47,8 @@ func NewAreaUninitialized(
 ) Area {
 	now := time.Now().UTC()
 	return NewArea(
-		UninitializedID,
-		UninitializedVersion,
+		domain.UninitializedID,
+		domain.UninitializedVersion,
 		userID,
 		title,
 		1,
@@ -112,11 +113,11 @@ func (a *Area) ApplyPatch(patch AreaPatch) error {
 }
 
 type AreaPatch struct {
-	Title Nullable[string]
+	Title domain.Nullable[string]
 }
 
 func NewAreaPatch(
-	title Nullable[string],
+	title domain.Nullable[string],
 ) AreaPatch {
 	return AreaPatch{
 		Title: title,

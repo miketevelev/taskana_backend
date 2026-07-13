@@ -24,9 +24,6 @@ func (s *AuthService) Refresh(
 
 	userID, expiresAt, err := s.authRepository.GetRefreshToken(ctx, tokenHash)
 	if err != nil {
-		if replayUserID, replayErr := core_auth.ParseRefreshTokenUserID(refreshToken); replayErr == nil {
-			_ = s.authRepository.DeleteAllRefreshTokens(ctx, replayUserID)
-		}
 		return domain.TokenPair{}, fmt.Errorf(
 			"invalid refresh token: %w", core_errors.ErrUnauthorized,
 		)
