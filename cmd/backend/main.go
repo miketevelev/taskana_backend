@@ -14,6 +14,9 @@ import (
 	core_pgx_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/miketevelev/taskana_backend/internal/core/transport/http/middleware"
 	core_http_server "github.com/miketevelev/taskana_backend/internal/core/transport/http/server"
+	analytics_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/analytics/reporitory/postgres"
+	analytics_service "github.com/miketevelev/taskana_backend/internal/features/analytics/service"
+	analytics_transport_http "github.com/miketevelev/taskana_backend/internal/features/analytics/transport/http"
 	areas_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/areas/repository/postgres"
 	areas_service "github.com/miketevelev/taskana_backend/internal/features/areas/service"
 	areas_transport_http "github.com/miketevelev/taskana_backend/internal/features/areas/transport/http"
@@ -36,6 +39,9 @@ import (
 	tasks_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/tasks/reporitory/postgres"
 	tasks_service "github.com/miketevelev/taskana_backend/internal/features/tasks/service"
 	tasks_transport_http "github.com/miketevelev/taskana_backend/internal/features/tasks/transport/http"
+	timetracking_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/timetracking/repository/postgres"
+	timetracking_service "github.com/miketevelev/taskana_backend/internal/features/timetracking/service"
+	timetracking_transport_http "github.com/miketevelev/taskana_backend/internal/features/timetracking/transport/http"
 	user_postgres_repository "github.com/miketevelev/taskana_backend/internal/features/user/repository/postgres"
 	user_service "github.com/miketevelev/taskana_backend/internal/features/user/service"
 	user_transport_http "github.com/miketevelev/taskana_backend/internal/features/user/transport/http"
@@ -128,6 +134,22 @@ func main() {
 		checklistsService, tokenManager,
 	)
 
+	// Init TimeTracking layers (Repository -> Service -> Handler)
+	timetrackingRepository := timetracking_postgres_repository.NewTimeTrackingRepository(pool)
+	timetrackingService := timetracking_service.NewTimeTrackingService(
+		timetrackingRepository,
+	)
+	timetrackingTransportHTTP := timetracking_transport_http.NewTimeTrackingHTTPHandler(
+		timetrackingService, tokenManager,
+	)
+
+	// Init Statistics layers (Repository -> Service -> Handler)
+	analyticsRepository := analytics_postgres_repository.NewAnalyticsRepository(pool)
+	analyticsService := analytics_service.NewAnalyticsService(analyticsRepository)
+	analyticsTransportHTTP := analytics_transport_http.NewAnalyticsHTTPHandler(
+		analyticsService, tokenManager,
+	)
+
 	// Rate Limiter Janitor
 	defer authTransportHTTP.Shutdown()
 
@@ -155,6 +177,8 @@ func main() {
 	apiVersionRouter.RegisterRoutes(taskTemplatesTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(checklistsTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(timetrackingTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(analyticsTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiVersionRouter)
 
