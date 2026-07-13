@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
@@ -15,8 +15,8 @@ import (
 func (r *AreasRepository) PatchArea(
 	ctx context.Context,
 	userID uuid.UUID,
-	area domain.Area,
-) (domain.Area, error) {
+	area domain_area.Area,
+) (domain_area.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -42,11 +42,11 @@ func (r *AreasRepository) PatchArea(
 	areaModel, err := scanArea(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Area{}, fmt.Errorf(
+			return domain_area.Area{}, fmt.Errorf(
 				"area concurrently accessed: %w", core_errors.ErrConflict,
 			)
 		}
-		return domain.Area{}, fmt.Errorf("patch area repository: %w", err)
+		return domain_area.Area{}, fmt.Errorf("patch area repository: %w", err)
 	}
 
 	return areaDomainFromModel(areaModel), nil
@@ -55,27 +55,29 @@ func (r *AreasRepository) PatchArea(
 func (r *AreasRepository) PatchAreaWithReordering(
 	ctx context.Context,
 	userID uuid.UUID,
-	area domain.Area,
+	area domain_area.Area,
 	oldPos int,
-) (domain.Area, error) {
+) (domain_area.Area, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
-		return domain.Area{}, err
+		return domain_area.Area{}, err
 	}
 	defer tx.Rollback(ctx)
 
 	var count int
 	countQuery := `SELECT COUNT(*) FROM taskana.areas WHERE user_id = $1`
 	if err := tx.QueryRow(ctx, countQuery, userID).Scan(&count); err != nil {
-		return domain.Area{}, fmt.Errorf("failed to get areas count: %w", err)
+		return domain_area.Area{}, fmt.Errorf(
+			"failed to get areas count: %w", err,
+		)
 	}
 
 	newPos := area.Position
 	if newPos > count || newPos < 1 {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"position %d out of bounds, max allowed is %d: %w",
 			newPos, count, core_errors.ErrInvalidArgument,
 		)
@@ -100,7 +102,7 @@ func (r *AreasRepository) PatchAreaWithReordering(
 	}
 
 	if err != nil {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"failed to shift neighboring positions: %w", err,
 		)
 	}
@@ -128,17 +130,17 @@ func (r *AreasRepository) PatchAreaWithReordering(
 	areaModel, err := scanArea(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Area{}, fmt.Errorf(
+			return domain_area.Area{}, fmt.Errorf(
 				"area with id='%s' concurrently accessed: %w",
 				area.ID,
 				core_errors.ErrConflict,
 			)
 		}
-		return domain.Area{}, fmt.Errorf("patch area repository: %w", err)
+		return domain_area.Area{}, fmt.Errorf("patch area repository: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return domain.Area{}, fmt.Errorf(
+		return domain_area.Area{}, fmt.Errorf(
 			"failed to commit reordering transaction: %w", err,
 		)
 	}

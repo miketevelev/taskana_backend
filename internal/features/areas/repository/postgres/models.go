@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/area"
 )
 
 type AreaModel struct {
@@ -18,8 +18,8 @@ type AreaModel struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func areaDomainFromModel(areaModel AreaModel) domain.Area {
-	return domain.NewArea(
+func areaDomainFromModel(areaModel AreaModel) domain_area.Area {
+	return domain_area.NewArea(
 		areaModel.ID,
 		areaModel.Version,
 		areaModel.UserID,
@@ -30,14 +30,14 @@ func areaDomainFromModel(areaModel AreaModel) domain.Area {
 	)
 }
 
-func areaDomainsFromModels(areas []AreaModel) []domain.Area {
+func areaDomainsFromModels(areas []AreaModel) []domain_area.Area {
 	if len(areas) == 0 {
-		return []domain.Area{}
+		return []domain_area.Area{}
 	}
-	areaDomains := make([]domain.Area, len(areas))
+	areaDomains := make([]domain_area.Area, len(areas))
 
 	for i, area := range areas {
-		areaDomains[i] = domain.Area{
+		areaDomains[i] = domain_area.Area{
 			ID:        area.ID,
 			Version:   area.Version,
 			UserID:    area.UserID,

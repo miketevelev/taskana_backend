@@ -129,28 +129,29 @@ func AuthRateLimit(
 }
 
 func clientKey(r *http.Request) string {
-	ip := r.Header.Get("X-Forwarded-For")
-	if ip == "" {
-		ip = r.Header.Get("X-Real-IP")
-	}
-
-	if ip == "" {
-		host, _, err := net.SplitHostPort(r.RemoteAddr)
-		if err == nil {
-			ip = host
-		} else {
-			ip = r.RemoteAddr
-		}
-	}
-
-	if idx := strings.Index(ip, ","); idx >= 0 {
-		ip = strings.TrimSpace(ip[:idx])
-	}
-
 	email := r.Header.Get("X-Auth-Email")
 	if email != "" {
-		return ip + ":" + strings.ToLower(email)
+		return "email:" + strings.ToLower(strings.TrimSpace(email))
 	}
 
-	return ip
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		host = r.RemoteAddr
+	}
+
+	// IMPORTANT: If your Go server is behind a trusted load balancer (Nginx/Cloudflare/ALB),
+	// which forcibly ERASES the user's X-Real-IP and replaces it with the real IP,
+	// then you can uncomment the lines below:
+	/*
+	   if realIP := r.Header.Get("X-Real-IP"); realIP != "" {
+	       return "ip:" + realIP
+	   }
+	*/
+
+	// Nginx automatically detects the client's IP ($remote_addr) and
+	// hardcodes it into the header,
+	// erasing any fakes the client sent to X-Real-IP.
+	// proxy_set_header X-Real-IP $remote_addr;
+
+	return "ip:" + host
 }
