@@ -5,26 +5,26 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 )
 
 type ProjectModel struct {
-	ID          uuid.UUID            `json:"id"`
-	Version     int                  `json:"version"`
-	UserID      uuid.UUID            `json:"user_id"`
-	AreaID      *uuid.UUID           `json:"area_id,omitempty"`
-	Title       string               `json:"title"`
-	Notes       *string              `json:"notes,omitempty"`
-	Status      domain.ProjectStatus `json:"status"`
-	Position    int                  `json:"position"`
-	Deadline    *time.Time           `json:"deadline,omitempty"`
-	CompletedAt *time.Time           `json:"completed_at,omitempty"`
-	CreatedAt   time.Time            `json:"created_at,omitempty"`
-	UpdatedAt   time.Time            `json:"updated_at,omitempty"`
+	ID          uuid.UUID                    `json:"id"`
+	Version     int                          `json:"version"`
+	UserID      uuid.UUID                    `json:"user_id"`
+	AreaID      *uuid.UUID                   `json:"area_id,omitempty"`
+	Title       string                       `json:"title"`
+	Notes       *string                      `json:"notes,omitempty"`
+	Status      domain_project.ProjectStatus `json:"status"`
+	Position    int                          `json:"position"`
+	Deadline    *time.Time                   `json:"deadline,omitempty"`
+	CompletedAt *time.Time                   `json:"completed_at,omitempty"`
+	CreatedAt   time.Time                    `json:"created_at,omitempty"`
+	UpdatedAt   time.Time                    `json:"updated_at,omitempty"`
 }
 
-func projectDomainFromModel(projectModel ProjectModel) domain.Project {
-	return domain.Project{
+func projectDomainFromModel(projectModel ProjectModel) domain_project.Project {
+	return domain_project.Project{
 		ID:          projectModel.ID,
 		Version:     projectModel.Version,
 		UserID:      projectModel.UserID,
@@ -40,14 +40,14 @@ func projectDomainFromModel(projectModel ProjectModel) domain.Project {
 	}
 }
 
-func projectDomainsFromModels(projects []ProjectModel) []domain.Project {
+func projectDomainsFromModels(projects []ProjectModel) []domain_project.Project {
 	if len(projects) == 0 {
-		return []domain.Project{}
+		return []domain_project.Project{}
 	}
-	projectDomains := make([]domain.Project, len(projects))
+	projectDomains := make([]domain_project.Project, len(projects))
 
 	for i, project := range projects {
-		projectDomains[i] = domain.Project{
+		projectDomains[i] = domain_project.Project{
 			ID:          project.ID,
 			Version:     project.Version,
 			UserID:      project.UserID,

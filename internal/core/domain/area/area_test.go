@@ -67,9 +67,44 @@ func TestArea_Validate(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "title too short",
+			name: "title empty is invalid",
 			mutateArea: func(a *domain_area.Area) {
-				a.Title = "Hi"
+				a.Title = ""
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "title exactly at lower boundary (3 chars) is valid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = "Hey"
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "title one below lower boundary (2 chars) is invalid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = "He"
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "title exactly at upper boundary (100 chars) is valid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = strings.Repeat("a", 100)
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "title one above upper boundary (101 chars) is invalid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = strings.Repeat("a", 101)
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "title too long",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = strings.Repeat("a", 150)
 			},
 			expectedErr: core_errors.ErrInvalidArgument,
 		},
@@ -81,9 +116,37 @@ func TestArea_Validate(t *testing.T) {
 			expectedErr: core_errors.ErrInvalidArgument,
 		},
 		{
-			name: "title too long",
+			name: "title with leading/trailing spaces is trimmed before length check",
 			mutateArea: func(a *domain_area.Area) {
-				a.Title = strings.Repeat("a", 101)
+				a.Title = "  Hi  "
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "title with multi-byte runes counted by rune, not by byte length",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = "Дом"
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "title with multi-byte runes at upper boundary (100 runes) is valid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = strings.Repeat("д", 100)
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "title with multi-byte runes one above upper boundary (101 runes) is invalid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = strings.Repeat("д", 101)
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "title with emoji counted by rune",
+			mutateArea: func(a *domain_area.Area) {
+				a.Title = "🚀🚀"
 			},
 			expectedErr: core_errors.ErrInvalidArgument,
 		},
@@ -93,6 +156,20 @@ func TestArea_Validate(t *testing.T) {
 				a.Position = 0
 			},
 			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "negative position is invalid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Position = -1
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "position exactly at lower boundary (1) is valid",
+			mutateArea: func(a *domain_area.Area) {
+				a.Position = 1
+			},
+			expectedErr: nil,
 		},
 		{
 			name: "created_at is zero",
@@ -109,11 +186,26 @@ func TestArea_Validate(t *testing.T) {
 			expectedErr: core_errors.ErrInvalidArgument,
 		},
 		{
+			name: "both timestamps zero",
+			mutateArea: func(a *domain_area.Area) {
+				a.CreatedAt = time.Time{}
+				a.UpdatedAt = time.Time{}
+			},
+			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
 			name: "updated before created",
 			mutateArea: func(a *domain_area.Area) {
 				a.UpdatedAt = a.CreatedAt.Add(-1 * time.Hour)
 			},
 			expectedErr: core_errors.ErrInvalidArgument,
+		},
+		{
+			name: "updated equal to created is valid",
+			mutateArea: func(a *domain_area.Area) {
+				a.UpdatedAt = a.CreatedAt
+			},
+			expectedErr: nil,
 		},
 		{
 			name: "negative version gets mutated to 0",
@@ -123,6 +215,26 @@ func TestArea_Validate(t *testing.T) {
 			expectedErr: nil,
 			checkResult: func(t *testing.T, a *domain_area.Area) {
 				assert.Equal(t, 0, a.Version)
+			},
+		},
+		{
+			name: "zero version is left untouched",
+			mutateArea: func(a *domain_area.Area) {
+				a.Version = 0
+			},
+			expectedErr: nil,
+			checkResult: func(t *testing.T, a *domain_area.Area) {
+				assert.Equal(t, 0, a.Version)
+			},
+		},
+		{
+			name: "positive version is left untouched",
+			mutateArea: func(a *domain_area.Area) {
+				a.Version = 7
+			},
+			expectedErr: nil,
+			checkResult: func(t *testing.T, a *domain_area.Area) {
+				assert.Equal(t, 7, a.Version)
 			},
 		},
 	}
@@ -188,6 +300,16 @@ func TestAreaPatch_Validate(t *testing.T) {
 			},
 			expectedErr: core_errors.ErrInvalidArgument,
 		},
+		{
+			name: "valid patch: Set is false even though Value is non-nil is ignored by callers, " +
+				"but Validate itself only errors on Set&&Value==nil",
+			patch: domain_area.AreaPatch{
+				Title: domain.Nullable[string]{
+					Set: false, Value: ptr("Ignored"),
+				},
+			},
+			expectedErr: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -229,6 +351,16 @@ func TestArea_ApplyPatch(t *testing.T) {
 			expectedTitle: "Updated Title",
 		},
 		{
+			name: "successfully apply title patch with multi-byte title",
+			patch: domain_area.AreaPatch{
+				Title: domain.Nullable[string]{
+					Set: true, Value: ptr("Обновлённый Заголовок"),
+				},
+			},
+			expectedErr:   nil,
+			expectedTitle: "Обновлённый Заголовок",
+		},
+		{
 			name: "successfully apply empty patch (no changes)",
 			patch: domain_area.AreaPatch{
 				Title: domain.Nullable[string]{Set: false, Value: nil},
@@ -237,18 +369,38 @@ func TestArea_ApplyPatch(t *testing.T) {
 			expectedTitle: "Initial Title",
 		},
 		{
-			name: "fail: patch is invalid",
+			name: "fail: patch is invalid (Set true, Value nil) — title unchanged",
 			patch: domain_area.AreaPatch{
 				Title: domain.Nullable[string]{Set: true, Value: nil},
 			},
-			expectedErr: core_errors.ErrInvalidArgument,
+			expectedErr:   core_errors.ErrInvalidArgument,
+			expectedTitle: "Initial Title",
 		},
 		{
-			name: "fail: patched area becomes invalid (title too short)",
+			name: "fail: patched area becomes invalid (title too short) — title unchanged",
 			patch: domain_area.AreaPatch{
 				Title: domain.Nullable[string]{Set: true, Value: ptr("No")},
 			},
-			expectedErr: core_errors.ErrInvalidArgument,
+			expectedErr:   core_errors.ErrInvalidArgument,
+			expectedTitle: "Initial Title",
+		},
+		{
+			name: "fail: patched area becomes invalid (title too long) — title unchanged",
+			patch: domain_area.AreaPatch{
+				Title: domain.Nullable[string]{
+					Set: true, Value: ptr(strings.Repeat("a", 101)),
+				},
+			},
+			expectedErr:   core_errors.ErrInvalidArgument,
+			expectedTitle: "Initial Title",
+		},
+		{
+			name: "fail: patched area becomes invalid (title only spaces) — title unchanged",
+			patch: domain_area.AreaPatch{
+				Title: domain.Nullable[string]{Set: true, Value: ptr("     ")},
+			},
+			expectedErr:   core_errors.ErrInvalidArgument,
+			expectedTitle: "Initial Title",
 		},
 	}
 
@@ -263,8 +415,15 @@ func TestArea_ApplyPatch(t *testing.T) {
 					assert.ErrorIs(t, err, tt.expectedErr)
 				} else {
 					assert.NoError(t, err)
-					assert.Equal(t, tt.expectedTitle, area.Title)
 				}
+
+				assert.Equal(t, tt.expectedTitle, area.Title)
+
+				assert.Equal(t, validArea.ID, area.ID)
+				assert.Equal(t, validArea.UserID, area.UserID)
+				assert.Equal(t, validArea.Position, area.Position)
+				assert.Equal(t, validArea.CreatedAt, area.CreatedAt)
+				assert.Equal(t, validArea.UpdatedAt, area.UpdatedAt)
 			},
 		)
 	}

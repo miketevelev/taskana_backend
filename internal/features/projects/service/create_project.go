@@ -5,14 +5,14 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 )
 
 func (s *ProjectService) CreateProject(
 	ctx context.Context,
 	userID uuid.UUID,
-	project domain.Project,
-) (domain.Project, error) {
+	project domain_project.Project,
+) (domain_project.Project, error) {
 	if project.ID == uuid.Nil {
 		project.ID = uuid.New()
 	}
@@ -22,7 +22,7 @@ func (s *ProjectService) CreateProject(
 	}
 
 	if err := project.Validate(); err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"project validation failed: %w", err,
 		)
 	}
@@ -33,7 +33,7 @@ func (s *ProjectService) CreateProject(
 		project,
 	)
 	if err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"failed to create project: %w",
 			err,
 		)

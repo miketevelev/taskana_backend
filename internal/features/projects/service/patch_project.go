@@ -5,18 +5,18 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 )
 
 func (s *ProjectService) PatchProject(
 	ctx context.Context,
 	userID uuid.UUID,
 	projectID uuid.UUID,
-	patch domain.ProjectPatch,
-) (domain.Project, error) {
+	patch domain_project.ProjectPatch,
+) (domain_project.Project, error) {
 	project, err := s.projectsRepository.GetProject(ctx, userID, projectID)
 	if err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"error while fetching project: %w", err,
 		)
 	}
@@ -25,7 +25,7 @@ func (s *ProjectService) PatchProject(
 	oldPosition := project.Position
 
 	if err := project.ApplyPatch(patch); err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"error while applying patch to project: %w", err,
 		)
 	}
@@ -39,7 +39,7 @@ func (s *ProjectService) PatchProject(
 		}
 	}
 
-	var patchedProject domain.Project
+	var patchedProject domain_project.Project
 
 	if areaChanged {
 		patchedProject, err = s.projectsRepository.PatchProjectWithAreaChange(
@@ -52,7 +52,7 @@ func (s *ProjectService) PatchProject(
 	}
 
 	if err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"error while saving patched project: %w", err,
 		)
 	}

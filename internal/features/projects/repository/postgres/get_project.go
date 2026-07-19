@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
@@ -15,7 +15,7 @@ func (r *ProjectRepository) GetProject(
 	ctx context.Context,
 	userID uuid.UUID,
 	projectID uuid.UUID,
-) (domain.Project, error) {
+) (domain_project.Project, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -31,14 +31,14 @@ notes, status, position, deadline, completed_at, created_at, updated_at
 	projectModel, err := scanProject(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Project{}, fmt.Errorf(
+			return domain_project.Project{}, fmt.Errorf(
 				"project with id %s not found: %w",
 				projectID,
 				core_errors.ErrNotFound,
 			)
 		}
 
-		return domain.Project{}, fmt.Errorf("scan error %w", err)
+		return domain_project.Project{}, fmt.Errorf("scan error %w", err)
 	}
 
 	projectDomain := projectDomainFromModel(projectModel)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 )
 
 func (s *ProjectService) ChangePosition(
@@ -13,10 +13,10 @@ func (s *ProjectService) ChangePosition(
 	userID uuid.UUID,
 	projectID uuid.UUID,
 	newPosition int,
-) (domain.Project, error) {
+) (domain_project.Project, error) {
 	project, err := s.projectsRepository.GetProject(ctx, userID, projectID)
 	if err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"error getting project: %w", err,
 		)
 	}
@@ -33,7 +33,7 @@ func (s *ProjectService) ChangePosition(
 		ctx, userID, project, oldPosition,
 	)
 	if err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"error changing position in repository: %w", err,
 		)
 	}

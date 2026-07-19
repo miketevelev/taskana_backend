@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 	core_postgres_pool "github.com/miketevelev/taskana_backend/internal/core/repository/postgres/pool"
 )
@@ -15,8 +15,8 @@ import (
 func (r *ProjectRepository) PatchProject(
 	ctx context.Context,
 	userID uuid.UUID,
-	project domain.Project,
-) (domain.Project, error) {
+	project domain_project.Project,
+) (domain_project.Project, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -57,13 +57,13 @@ func (r *ProjectRepository) PatchProject(
 	projectModel, err := scanProject(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Project{}, fmt.Errorf(
+			return domain_project.Project{}, fmt.Errorf(
 				"project with id='%s' concurrently accessed: %w",
 				project.ID,
 				core_errors.ErrConflict,
 			)
 		}
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"patch project repository: %w", err,
 		)
 	}
@@ -74,16 +74,16 @@ func (r *ProjectRepository) PatchProject(
 func (r *ProjectRepository) PatchProjectWithAreaChange(
 	ctx context.Context,
 	userID uuid.UUID,
-	project domain.Project,
+	project domain_project.Project,
 	oldPosition int,
 	oldAreaID *uuid.UUID,
-) (domain.Project, error) {
+) (domain_project.Project, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
-		return domain.Project{}, err
+		return domain_project.Project{}, err
 	}
 	defer tx.Rollback(ctx)
 
@@ -98,7 +98,7 @@ func (r *ProjectRepository) PatchProjectWithAreaChange(
 	if err := tx.QueryRow(
 		ctx, countNewQuery, userID, project.AreaID,
 	).Scan(&countNewArea); err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"failed to get count in new area: %w", err,
 		)
 	}
@@ -115,7 +115,7 @@ func (r *ProjectRepository) PatchProjectWithAreaChange(
 	if _, err = tx.Exec(
 		ctx, shiftOldQuery, now, userID, oldAreaID, oldPosition,
 	); err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"failed to shift in old area: %w", err,
 		)
 	}
@@ -141,15 +141,17 @@ func (r *ProjectRepository) PatchProjectWithAreaChange(
 	projectModel, err := scanProject(row)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
-			return domain.Project{}, fmt.Errorf(
+			return domain_project.Project{}, fmt.Errorf(
 				"project concurrently accessed: %w", core_errors.ErrConflict,
 			)
 		}
-		return domain.Project{}, fmt.Errorf("patch project repository: %w", err)
+		return domain_project.Project{}, fmt.Errorf(
+			"patch project repository: %w", err,
+		)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return domain.Project{}, fmt.Errorf(
+		return domain_project.Project{}, fmt.Errorf(
 			"failed to commit area change transaction: %w", err,
 		)
 	}

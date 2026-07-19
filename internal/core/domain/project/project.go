@@ -1,4 +1,4 @@
-package domain
+package domain_project
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/miketevelev/taskana_backend/internal/core/domain"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
@@ -71,8 +72,8 @@ func NewProjectUninitialized(
 ) Project {
 	now := time.Now().UTC()
 	return NewProject(
-		UninitializedID,
-		UninitializedVersion,
+		domain.UninitializedID,
+		domain.UninitializedVersion,
 		userID,
 		areaID,
 		title,
@@ -239,21 +240,21 @@ func (p *Project) ApplyPatch(patch ProjectPatch) error {
 }
 
 type ProjectPatch struct {
-	AreaID      Nullable[*uuid.UUID]
-	Title       Nullable[string]
-	Notes       Nullable[*string]
-	Status      Nullable[ProjectStatus]
-	Deadline    Nullable[*time.Time]
-	CompletedAt Nullable[*time.Time]
+	AreaID      domain.Nullable[*uuid.UUID]
+	Title       domain.Nullable[string]
+	Notes       domain.Nullable[*string]
+	Status      domain.Nullable[ProjectStatus]
+	Deadline    domain.Nullable[*time.Time]
+	CompletedAt domain.Nullable[*time.Time]
 }
 
 func NewProjectPatch(
-	areaID Nullable[*uuid.UUID],
-	title Nullable[string],
-	notes Nullable[*string],
-	status Nullable[ProjectStatus],
-	deadline Nullable[*time.Time],
-	completedAt Nullable[*time.Time],
+	areaID domain.Nullable[*uuid.UUID],
+	title domain.Nullable[string],
+	notes domain.Nullable[*string],
+	status domain.Nullable[ProjectStatus],
+	deadline domain.Nullable[*time.Time],
+	completedAt domain.Nullable[*time.Time],
 ) ProjectPatch {
 	return ProjectPatch{
 		AreaID:      areaID,

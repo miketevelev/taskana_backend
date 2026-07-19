@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	core_auth "github.com/miketevelev/taskana_backend/internal/core/auth"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 	core_logger "github.com/miketevelev/taskana_backend/internal/core/logger"
 	core_http_request "github.com/miketevelev/taskana_backend/internal/core/transport/http/request"
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
@@ -65,8 +65,8 @@ func (h *ProjectsHTTPHandler) CreateProject(
 func domainFromDTO(
 	userID uuid.UUID,
 	dto CreateProjectRequest,
-) domain.Project {
-	return domain.NewProjectUninitialized(
+) domain_project.Project {
+	return domain_project.NewProjectUninitialized(
 		userID,
 		dto.AreaID,
 		dto.Title,

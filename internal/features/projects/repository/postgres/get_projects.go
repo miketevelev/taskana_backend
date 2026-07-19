@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 )
 
 func (r *ProjectRepository) GetProjects(
@@ -13,7 +13,7 @@ func (r *ProjectRepository) GetProjects(
 	userID uuid.UUID,
 	limit *int,
 	offset *int,
-) ([]domain.Project, error) {
+) ([]domain_project.Project, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 

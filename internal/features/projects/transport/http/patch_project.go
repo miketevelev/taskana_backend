@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	core_auth "github.com/miketevelev/taskana_backend/internal/core/auth"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 	core_logger "github.com/miketevelev/taskana_backend/internal/core/logger"
 	core_http_request "github.com/miketevelev/taskana_backend/internal/core/transport/http/request"
 	core_http_response "github.com/miketevelev/taskana_backend/internal/core/transport/http/response"
@@ -16,12 +16,12 @@ import (
 )
 
 type PatchProjectRequest struct {
-	AreaID      core_http_types.Nullable[*uuid.UUID]           `json:"area_id"`
-	Title       core_http_types.Nullable[string]               `json:"title"`
-	Notes       core_http_types.Nullable[*string]              `json:"notes"`
-	Status      core_http_types.Nullable[domain.ProjectStatus] `json:"status"`
-	Deadline    core_http_types.Nullable[*time.Time]           `json:"deadline"`
-	CompletedAt core_http_types.Nullable[*time.Time]           `json:"completed_at"`
+	AreaID      core_http_types.Nullable[*uuid.UUID]                   `json:"area_id"`
+	Title       core_http_types.Nullable[string]                       `json:"title"`
+	Notes       core_http_types.Nullable[*string]                      `json:"notes"`
+	Status      core_http_types.Nullable[domain_project.ProjectStatus] `json:"status"`
+	Deadline    core_http_types.Nullable[*time.Time]                   `json:"deadline"`
+	CompletedAt core_http_types.Nullable[*time.Time]                   `json:"completed_at"`
 }
 
 func (r *PatchProjectRequest) Validate() error {
@@ -44,7 +44,7 @@ func (r *PatchProjectRequest) Validate() error {
 		}
 		status := *r.Status.Value
 		switch status {
-		case domain.ProjectStatusActive, domain.ProjectStatusCompleted, domain.ProjectStatusDropped:
+		case domain_project.ProjectStatusActive, domain_project.ProjectStatusCompleted, domain_project.ProjectStatusDropped:
 			// статус валиден
 		default:
 			return fmt.Errorf("invalid project status '%s'", status)
@@ -131,8 +131,8 @@ func (h *ProjectsHTTPHandler) PatchProject(
 	responseHandler.JSONResponse(response, http.StatusOK)
 }
 
-func projectPatchFromRequest(request PatchProjectRequest) domain.ProjectPatch {
-	return domain.NewProjectPatch(
+func projectPatchFromRequest(request PatchProjectRequest) domain_project.ProjectPatch {
+	return domain_project.NewProjectPatch(
 		request.AreaID.ToDomain(),
 		request.Title.ToDomain(),
 		request.Notes.ToDomain(),

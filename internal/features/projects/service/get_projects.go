@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/miketevelev/taskana_backend/internal/core/domain"
+	"github.com/miketevelev/taskana_backend/internal/core/domain/project"
 	core_errors "github.com/miketevelev/taskana_backend/internal/core/errors"
 )
 
@@ -14,7 +14,7 @@ func (s *ProjectService) GetProjects(
 	userID uuid.UUID,
 	limit *int,
 	offset *int,
-) ([]domain.Project, error) {
+) ([]domain_project.Project, error) {
 	if limit != nil && *limit < 0 {
 		return nil, fmt.Errorf(
 			"limit must be non-negative: %w",
